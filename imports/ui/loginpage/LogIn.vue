@@ -11,32 +11,40 @@
         <input type="password" v-model="password" name="password" required>
     
         <button v-on:click="logIn" type="submit" class="loginbtn"><b>Log In</b></button>
-        <p class="linksignup">Don't have an account? <router-link to="/signup" class="signuplink">Sign Up</router-link>
-        </p>
+        <p v-if="error" class="errormsg">{{ error }}</p>
+        <p class="linksignup">Don't have an account? <router-link to="/signup" class="signuplink">Sign Up</router-link> </p>
     </div>
     </template>
+
     
-        
-        
-    <script>
-    export default {
-        name: "LogIn",
-        data() {
-            return {
-                fullname: "",
-                email: "",
-                password: ""
-            }
-        },
-        methods: {
-            logIn() {
-                console.warn("login", this.fullname, this.email, this.password)
-    
-            }
+<script>
+export default {
+  name: "LogIn",
+  data() {
+    return {
+      email: "",
+      password: ""
+    };
+  },
+  methods: {
+    logIn() {
+      Meteor.call('organizations.logIn', { email: this.email, password: this.password }, (error, result) => {
+        if (error) {
+          console.error('Error during login:', error);
+        } else {
+          if (result.success) {
+            // If login is successful, you can redirect to the contacttable page
+            this.$router.push('/contacttable');
+          } else {
+            // If login fails, display the error message
+            console.error('Error during login:', result.message);
+          }
         }
-    
+      });
     }
-    </script>
+  }
+};
+</script>
         
         
     <style scoped>

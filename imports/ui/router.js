@@ -4,9 +4,7 @@ import LogIn from './loginpage/LogIn.vue';
 import HomePage from './loginpage/HomePage.vue';
 import ContactTable from './tables/ContactTable.vue';
 import TagTable from './tables/TagTable.vue';
-import OrganizationForm from './forms/OrganizationForm.vue';
-import InviteForm from './forms/InviteForm.vue'
-
+import OrganizationTable from './tables/OrganizationTable.vue';
 
 
 export const router = createRouter({
@@ -29,15 +27,10 @@ export const router = createRouter({
           component: TagTable,
         },
         {
-          path:'/organizationinfoedit',
+          path: '/organizationtable',
           name: 'organization',
-          component: OrganizationForm,
+          component: OrganizationTable,
         },
-        {
-        path:'/invite',
-        name: 'invite',
-        component: InviteForm,
-      },
       ]},
       {
         path: '/signup',

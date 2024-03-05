@@ -1,143 +1,116 @@
 <template>
-<form @submit.prevent="onSignUp">
+  <form @submit.prevent="onSignUp">
     <div class="signupContainer">
-        <img class="logo" src="logo.jpeg">
-        <h1> Sign Up</h1>
-        <div class="register">
+      <img class="logo" src="logo.jpeg">
+      <h1> Sign Up</h1>
+      <div class="register">
+        <p>Please fill in this form to create an account.</p>
+        <hr>
+        <label for="fullName"><b>Full Name</b></label>
+        <input type="text" v-model="user.fullName" name="fullName" required>
 
-            <p>Please fill in this form to create an account.</p>
-            <hr>
-            <label for="fullName"><b>Full Name</b></label>
-            <input type="text" v-model="fullName" name="fullName" required>
+        <label for="email"><b>Email</b></label>
+        <input type="email" v-model="user.email" name="email" required>
 
-            <label for="email"><b>Email</b></label>
-            <input type="email" v-model="email" name="email" required>
+        <label for="orgName"><b>Organization Name</b></label>
+        <input type="text" v-model="organization.orgName" name="orgName" required>
 
-            <label for="orgName"><b>Organization Name</b></label>
-            <input type="text" v-model="orgName" name="orgName" required>
+        <label for="orgRole"><b>Organization Role</b></label>
+        <input type="text" v-model="organization.orgRole" name="orgRole" required readonly>
 
-            <p v-if="RoleError" class="error-message">{{ RoleError }}</p>
+        <label for="password"><b>Password</b></label>
+        <input type="password" v-model="user.password" name="password" required>
 
-            <label for="password"><b>Password</b></label>
-            <input type="password" v-model="password" name="password" required>
+        <label for="confirmPassword"><b>Confirm Password</b></label>
+        <input type="password" v-model="user.confirmPassword" name="confirmPassword" required>
+        <p v-if="error" class="errormsg">{{ error }}</p>
 
-            <label for="confirmPassword"><b>Confirm Password</b></label>
-            <input type="password" v-model="confirmPassword" name="confirmPassword" required>
-            <p v-if="error" class="errormsg">{{ error }}</p>
+        <button type="submit" class="signupbtn"><b>Sign Up</b></button>
 
-            <button type="submit" class="signupbtn"><b>Sign Up</b></button>
-
-            <p class="linklogin">Already have an account? <router-link to="/login" class="loginlink">Log In</router-link>
-            </p>
-        </div>
+        <p class="linklogin">
+          Already have an account? <router-link to="/login" class="loginlink">Log In</router-link>
+        </p>
+      </div>
     </div>
-</form>
+  </form>
 </template>
 
-    
-    
 <script>
-import {
-    Meteor
-} from 'meteor/meteor';
+import { Meteor } from 'meteor/meteor';
+
 export default {
-    name: 'signup',
-    data() {
-        return {
-            fullName: "",
-            email: "",
-            orgName: "",
-            password: "",
-            confirmPassword: "",
-            error: "",
-            RoleError: "",
-            roles: [],
-        };
+  name: 'signup',
+  data() {
+    return {
+      user: {
+        fullName: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+      },
+      organization: {
+        orgName: '',
+        orgRole: 'Keela Admin',
+      },
+      error: '',
+    };
+  },
+  methods: {
+    checkPasswordValidation(password, confirmPassword) {
+  if (password !== confirmPassword) {
+    this.error = 'Password should be the same';
+  } else {
+    this.error = ''; // Clear the error when passwords match
+  }
+
     },
-    methods: {
-        checkPasswordValidation(password, confirmPassword) {
-            if (password !== confirmPassword) {
-                this.error = "Password should be the same";
-            }
-        },
-        clearInputField() {
-            this.fullName = "",
-                this.email = "";
-            this.orgName = "";
-            this.password = "";
-            this.confirmPassword = "";
-        },
+    onSignUp() {
+  const { fullName, email, password, confirmPassword } = this.user;
+  const { orgName, orgRole } = this.organization;
 
-        onSignUp() {
-            const fullName = this.fullName;
-            const email = this.email;
-            const orgName = this.orgName;
-            const password = this.password;
-            const confirmPassword = this.confirmPassword;
+  // Check password validation
+  this.checkPasswordValidation(password, confirmPassword);
 
-            this.checkPasswordValidation(password, confirmPassword);
-            console.log("in sign up");
+  if (!this.error) {
+    const newOrganization = {
+      fullName: fullName.trim(),
+      email: email.trim(),
+      orgName: orgName.trim(),
+      orgRole: orgRole.trim(),
+      password: password.trim(),
+      confirmPassword: confirmPassword.trim(),
+    };
 
-            /* if (this.error === "") {
-                        const user = {
-                            email: this.email,
-                            password: this.password,
-                            confirmPassword: this.confirmPassword,
-                            profile: {
-                                fullName: this.fullName,
-                                orgId: '',
-                                orgName: this.orgName,
-                                orgRole: "Keela Admin", // Set the role as "Keela Admin"
-                            },
-                        };
-    
-                        const newOrganization = {
-                            organizationName: this.orgName,
-                            organizationEmail: this.email,
-                        };
-    
-                        // Create user account
-                        Accounts.createUser(user, (error) => {
-                            if (error) {
-                                alert(error.reason);
-                            } else {
-                                // Get the user ID after successful account creation
-                                const userId = Meteor.userId();
-    
-                                // Insert organization data into organizations collection
-                                Meteor.call('organizations.insert', newOrganization, (error, orgId) => {
-                                    if (error) {
-                                        alert(error.reason);
-                                    } else {
-                                       /* // Link the user to the organization by updating the user's profile
-                                        Meteor.call('users.insertOrgId', userId, orgId, (error) => {
-                                            if (error) {
-                                                alert(error.reason);
-                                            }
-                                        });
-                                        console.log("org success")
-                                    }
-                                });
-    
-                                // Automatically assigning "Keela Admin" role
-                                Meteor.call('assignRole', userId, "Keela Admin", (error) => {
-                                    if (error) {
-                                        alert(error.reason);
-                                    } else {
-                                        this.clearInputField();
-                                        this.$router.push('/');
-                                    }
-                                });
-                            }
-                        });
-                    }*/
-        },
-    }
-
+    Meteor.call('organizations.insert', newOrganization, (error) => {
+      console.log('Method called!');
+      if (error) {
+        console.error('Error adding organization:', error);
+        this.error = 'Error adding organization: ' + error.message;
+      } else {
+        this.clearForm();
+        alert('Organization created successfully!');
+      }
+    });
+  }
+},
+    clearForm() {
+      // Clear the form fields
+      this.user = {
+        fullName: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+      };
+      this.organization = {
+        orgName: '',
+        orgRole: 'Keela Admin',
+      };
+    },
+  },
 };
 </script>
-    
-    
+
+  
 <style scoped>
 .logo {
     height: 30px;
