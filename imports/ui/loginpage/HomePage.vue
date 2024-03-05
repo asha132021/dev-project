@@ -4,7 +4,7 @@
       <aside class="sidebar">
         <div class="sidebar-item" @click="navigateTo('/contacttable')">Contact</div>
         <div class="sidebar-item" @click="navigateTo('/tagtable')">Tag</div>
-        <div class="sidebar-item" @click="navigateTo('/organizationtable')">Organization</div>
+       <div class="sidebar-item" @click="navigateTo('/organizationtable')">Organization</div>
       </aside>
   
       <!-- Main Content -->
@@ -26,7 +26,6 @@
       },
       logout() {
         // Implement your logout logic here
-        // For example, redirect to the login page
         this.$router.push('/login');
       }
     }
