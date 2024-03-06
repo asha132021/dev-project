@@ -97,11 +97,6 @@ export default {
 </script>
   
 <style scoped>
-.contact-table-container {
-    max-width: 800px;
-    margin: 20px auto;
-    position: relative;
-}
 
 .add-button {
     background-color: #7745d6;
@@ -111,7 +106,7 @@ export default {
     font-size: .875rem;
     line-height: 1.5;
     padding: 0.25rem 0.5rem;
-    margin-left: 700px;
+    margin-left: 1270px;
 }
 
 .contact-table {
@@ -142,8 +137,6 @@ export default {
 .contact-table tbody tr:nth-of-type(even) {
     background-color: #f3f3f3;
 }
-
-/* Modal Overlay Styles */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -151,12 +144,10 @@ export default {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-    /* Semi-transparent overlay */
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 2;
-    /* Ensure the overlay appears above other content */
 }
 
 .contact-form-modal {
@@ -165,7 +156,6 @@ export default {
     border-radius: 5px;
     padding: 20px;
     z-index: 3;
-    /* Ensure the modal appears above the overlay */
 }
 .actionbutton {
   background: none;

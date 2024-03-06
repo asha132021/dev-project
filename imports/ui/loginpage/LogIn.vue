@@ -1,43 +1,46 @@
 <template>
+  <form @submit.prevent="logIn">
     <img class="logo" src="logo.jpeg">
-    
-    <div class="login">
-        <h1>Log In</h1>
-        <hr>
-        <label for="email"><b>Email</b></label>
-        <input type="email" v-model="email" name="email" required>
-    
-        <label for="password"><b>Password</b></label>
-        <input type="password" v-model="password" name="password" required>
-    
-        <button v-on:click="logIn" type="submit" class="loginbtn"><b>Log In</b></button>
-        <p v-if="error" class="errormsg">{{ error }}</p>
-        <p class="linksignup">Don't have an account? <router-link to="/signup" class="signuplink">Sign Up</router-link> </p>
-    </div>
-    </template>
 
-    
+    <div class="login">
+      <h1>Log In</h1>
+      <hr>
+      <label for="email"><b>Email</b></label>
+      <input type="email" v-model="email" name="email" required>
+
+      <label for="password"><b>Password</b></label>
+      <input type="password" v-model="password" name="password" required>
+
+      <button type="submit" class="loginbtn"><b>Log In</b></button>
+      <p v-if="error" class="errormsg">{{ error }}</p>
+      <p class="linksignup">Don't have an account? <router-link to="/signup" class="signuplink">Sign Up</router-link> </p>
+    </div>
+  </form>
+</template>
+
 <script>
 export default {
   name: "LogIn",
   data() {
     return {
       email: "",
-      password: ""
+      password: "",
+      error: "",
     };
   },
   methods: {
     logIn() {
       Meteor.call('organizations.logIn', { email: this.email, password: this.password }, (error, result) => {
         if (error) {
-          console.error('Error during login:', error);
+
+          this.error = "An unexpected error occurred.";
         } else {
           if (result.success) {
             // If login is successful, you can redirect to the contacttable page
             this.$router.push('/contacttable');
           } else {
-            // If login fails, display the error message
-            console.error('Error during login:', result.message);
+            // If login fails, display the error message in red color
+            this.error = result.message;
           }
         }
       });
@@ -48,6 +51,9 @@ export default {
         
         
     <style scoped>
+    .errormsg {
+    color: red;
+    }
     .logo {
         height: 30px;
         margin-left: 100px;

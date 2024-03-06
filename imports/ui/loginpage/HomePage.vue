@@ -2,14 +2,13 @@
     <div class="home-page">
       <!-- Sidebar -->
       <aside class="sidebar">
-        <div class="sidebar-item" @click="navigateTo('/contacttable')">Contact</div>
-        <div class="sidebar-item" @click="navigateTo('/tagtable')">Tag</div>
-       <div class="sidebar-item" @click="navigateTo('/organizationtable')">Organization</div>
+        <div class="sidebar-item" @click="navigateTo('/contacttable')">Contacts</div>
+        <div class="sidebar-item" @click="navigateTo('/tagtable')">Tags</div>
+       <div class="sidebar-item" @click="navigateTo('/organizationtable')">Users</div>
       </aside>
   
       <!-- Main Content -->
       <main class="main-content">
-        <!-- Your main content goes here -->
         <router-view></router-view>
       </main>
   
@@ -33,14 +32,13 @@
   </script>
   
   <style scoped>
-  /* Add your styling here */
   .home-page {
     display: flex;
     height: 100vh;
   }
   
   .sidebar {
-    width: 200px;
+    width: 300px;
     background-color: #333;
     color: white;
     padding: 20px;
@@ -49,9 +47,10 @@
   }
   
   .sidebar-item {
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     cursor: pointer;
     transition: background-color 0.3s;
+    font-size: 18px;
   }
   
   .sidebar-item:hover {

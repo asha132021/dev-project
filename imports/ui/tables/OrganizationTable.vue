@@ -1,16 +1,13 @@
 <template>
   <div class="organization-table-container">
     <!-- Button to invite users -->
-    <button type="button" class="invite-button" @click="inviteUsers">Invite Users</button>
+    <button type="button" class="invite-button" @click="toggleInviteForm">Invite Users</button>
 
-    <!-- Button to edit organization information -->
-    <button type="button" class="edit-button" @click="editOrganization">Edit Organization Information</button>
-
-    <!-- OrganizationForm Modal Overlay -->
-    <div v-if="showOrganizationForm" class="modal-overlay">
-      <div class="organization-form-modal">
-        <!-- Pass organizationData as a prop to OrganizationForm -->
-        <OrganizationForm @closeForm="closeForm" :initialOrganization="organizationData" />
+        <!-- InviteForm Modal Overlay -->
+        <div v-if="showInviteForm" class="modal-overlay">
+      <div class="invite-form-modal">
+        <!-- Pass organizationData as a prop to InviteForm -->
+        <InviteForm @cancelInvite="cancelInvite" />
       </div>
     </div>
 
@@ -27,7 +24,7 @@
         <tr v-for="organization in organizations" :key="organization._id">
           <td>{{ organization.fullName }}</td>
           <td>{{ organization.email }}</td>
-          <td>{{ organization.role }}</td>
+          <td>{{ organization.orgRole }}</td>
           <td>
             <button class="actionbutton" @click="deleteOrganization(organization)">
               <img class="action-icon" src="/delete.png" alt="Delete" />
@@ -43,45 +40,28 @@
 </template>
 
 <script>
-import OrganizationForm from '../../ui/forms/OrganizationForm.vue'; 
 import { OrganizationsCollection } from '../../db/OrganizationsCollection';
+import InviteForm from '../../ui/forms/InviteForm.vue';
 import { Meteor } from 'meteor/meteor';
 
 export default {
   name: "OrganizationTable",
   components: {
-    OrganizationForm,
+    InviteForm,
   },
   data() {
     return {
-      showOrganizationForm: false,
-      organizationData: null, // Added to store data null so that it executes else value
+      showInviteForm: false,
+      organizationData: null,
     };
   },
   methods: {
-    inviteUsers() {
-      // Logic for inviting users
-      // You can add your implementation here
+    toggleInviteForm() {
+      this.showInviteForm = !this.showInviteForm;
     },
-    toggleOrganizationForm(organization = null) {
-      // Toggle the form and set organizationData if available
-      this.showOrganizationForm = !this.showOrganizationForm;
-      this.organizationData = organization;
+   cancelInvite() {
+      this.showInviteForm = false;
     },
-    deleteOrganization(organization) {
-      const confirmDelete = confirm('Are you sure you want to delete this organization?');
-      if (confirmDelete) {
-        Meteor.call('Organizations.delete', organization._id)
-      }
-    },
-    editOrganization(organization) {
-      // Open OrganizationForm in edit mode
-      this.toggleOrganizationForm(organization);
-    },
-    closeForm() {
-      this.showOrganizationForm = !this.showOrganizationForm;
-      this.organizationData = null;
-    }
   },
   meteor: {
     $subscribe: {
@@ -95,18 +75,16 @@ export default {
 </script>
 
 <style scoped>
-/* Add your organization table styling here */
-/* ... */
 
 .invite-button {
-  background-color: #00bcd4;
-  border-color: #00bcd4;
-  color: #fff;
-  border-radius: 0.2rem;
-  font-size: .875rem;
-  line-height: 1.5;
-  padding: 0.25rem 0.5rem;
-  margin-right: 10px;
+  background-color: #7745d6;
+    border-color: #7745d6;
+    color: #fff;
+    border-radius: 0.2rem;
+    font-size: .875rem;
+    line-height: 1.5;
+    padding: 0.25rem 0.5rem;
+    margin-left: 1270px;
 }
 
 .edit-button {
@@ -120,7 +98,7 @@ export default {
 }
 
 .organization-table {
-  /* Add your organization table styling here */
+
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
@@ -149,7 +127,6 @@ export default {
   background-color: #f3f3f3;
 }
 
-/* Modal Overlay Styles */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -169,6 +146,19 @@ export default {
   border-radius: 5px;
   padding: 20px;
   z-index: 3;
+}
+
+.actionbutton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  
+}
+
+.action-icon {
+  width: 25px;
+  height: 25px;
 }
 </style>
 

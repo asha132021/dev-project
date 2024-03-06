@@ -17,5 +17,5 @@ Meteor.publish('tags', function () {
  
 
 Meteor.publish('organizations', function () {
-   return OrgnaizationsCollection.find({}); 
+   return OrganizationsCollection.find({}); 
 });
