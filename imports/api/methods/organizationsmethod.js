@@ -15,9 +15,9 @@ Meteor.methods({
   'organizations.delete'(organizationId) {
     OrganizationsCollection.remove({ _id: organizationId });
   },
-  'logIn'({ email, password }) {
+  'organizations.logIn'({ email, password }) {
     const organization = OrganizationsCollection.findOne({ email });
-
+  
     if (organization && organization.password === password) {
       return { success: true, organizationId: organization._id };
     } else {
@@ -25,3 +25,4 @@ Meteor.methods({
     }
   },
 });
+

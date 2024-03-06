@@ -39,12 +39,8 @@
   
 <script>
 import TagForm from '../../ui/forms/TagForm.vue';
-import {
-    TagsCollection
-} from '../../db/TagsCollection';
-import {
-    Meteor
-} from 'meteor/meteor';
+import { TagsCollection } from '../../db/TagsCollection';
+import {Meteor} from 'meteor/meteor';
 
 export default {
     name: "TagTable",
@@ -97,13 +93,6 @@ export default {
   
   
 <style scoped>
-/* Styles for TagTable component */
-.tag-table-container {
-    max-width: 800px;
-    margin: 20px auto;
-    position: relative;
-}
-
 .add-button {
     background-color: #7745d6;
     border-color: #7745d6;
@@ -112,7 +101,7 @@ export default {
     font-size: .875rem;
     line-height: 1.5;
     padding: 0.25rem 0.5rem;
-    margin-left: 700px;
+    margin-left: 1290px;
 }
 
 .tag-table {
