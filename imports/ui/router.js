@@ -4,44 +4,43 @@ import LogIn from './loginpage/LogIn.vue';
 import HomePage from './loginpage/HomePage.vue';
 import ContactTable from './tables/ContactTable.vue';
 import TagTable from './tables/TagTable.vue';
-import OrganizationTable from './tables/OrganizationTable.vue';
-
+import UserTable from './tables/UserTable.vue';
 
 export const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
-      path: '/homepage',
+      path: '/signup',
+      name: 'signup',
+      component: SignUp,
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: LogIn,
+    },
+    {
+      path: '/homepage/:orgId',
       name: 'homepage',
       component: HomePage,
       children: [
         {
-          path:'/contacttable',
-          name: 'contact',
+          path: 'contacttable',
+          name: 'contacttable',
           component: ContactTable,
         },
-    
         {
-          path:'/tagtable',
-          name: 'tag',
+          path: 'tagtable',
+          name: 'tagtable',
           component: TagTable,
         },
         {
-          path: '/organizationtable',
-          name: 'organization',
-          component: OrganizationTable,
+          path: 'usertable',
+          name: 'usertable',
+          component: UserTable,
         },
-      ]},
-      {
-        path: '/signup',
-        name: 'signup',
-        component: SignUp,
-      },
-      {
-        path:'/login',
-        name: 'login',
-        component: LogIn,
-      },
-  
+      ],
+    },
   ],
 });
+

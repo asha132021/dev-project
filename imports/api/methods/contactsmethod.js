@@ -3,8 +3,10 @@ import { ContactsCollection } from '../../db/ContactsCollection';
 
 Meteor.methods({
   'Contacts.insert'(newContact) {
+    const orgId = newContact.orgId;
     ContactsCollection.insert({
       ...newContact,
+      orgId: orgId, 
       createdAt: new Date(),
     });
   },
@@ -15,3 +17,4 @@ Meteor.methods({
     ContactsCollection.update({ _id: contactId }, { $set: updatedContact });
   }
 });
+
