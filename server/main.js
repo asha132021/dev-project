@@ -6,16 +6,15 @@ import '../imports/api/methods/tagsmethod';
 import {OrganizationsCollection} from '../imports/db/OrganizationsCollection.js';
 import '../imports/api/methods/organizationsmethod';
 
-
-Meteor.publish('contacts', function () {
-    return ContactsCollection.find({});
-});
-
-Meteor.publish('tags', function () {
-    return TagsCollection.find({}); 
- });
- 
-
 Meteor.publish('organizations', function () {
-   return OrganizationsCollection.find({}); 
+    return OrganizationsCollection.find({}); 
+ });
+
+ Meteor.publish('contacts', function (orgId) {
+  return ContactsCollection.find({ orgId });
 });
+  
+  Meteor.publish('tags', function (orgId) {
+    return TagsCollection.find({ orgId });
+  });
+ 

@@ -1,99 +1,100 @@
 <template>
-    <div class="contact-form-container">
-      <form @submit.prevent="submitContact" class="contact-form">
+  <div class="contact-form-container">
+    <form @submit.prevent="submitContact" class="contact-form">
+      <h1>{{ initialContact ? 'Edit Contact' : 'Add Contact' }}</h1>
 
-        <h1>{{ initialContact ? 'Edit Contact' : 'Add Contact' }}</h1>
+      <label for="name">Contact Name</label>
+      <input v-model="contact.name" id="name" type="text" required />
 
-        <label for="name">Contact Name</label>
-        <input v-model="contact.name" id="name" type="text" required />
+      <label for="email">Email</label>
+      <input v-model="contact.email" id="email" type="email" required />
 
-        <label for="email">Email</label>
-        <input v-model="contact.email" id="email" type="email" required />
+      <label for="phone">Phone Number</label>
+      <input v-model="contact.phone" id="phone" type="tel" />
 
-        <label for="phone">Phone Number</label>
-        <input v-model="contact.phone" id="phone" type="tel" />
+      <label for="tag">Tag</label>
+      <input v-model="contact.tag" id="tag" type="text" />
 
-        <label for="tag">Tag</label>
-        <input v-model="contact.tag" id="tag" type="text" />
+      <div class="button-container">
+        <button type="submit" class="add-contact-button">{{ initialContact ? 'Save Changes' : 'Add Contact' }}</button>
+        <button type="button" @click="closeForm" class="close-button">Cancel</button>
+      </div>
+    </form>
+  </div>
+</template>
 
-  
-        <div class="button-container">
-          <button type="submit" class="add-contact-button">{{initialContact ? 'Save Changes' : 'Add Contact'}}</button>
-          <button type="button" @click="closeForm" class="close-button">Cancel</button>
-        </div>
-      </form>
-    </div>
-  </template>
-  
-  <script>
-  import { ref } from 'vue';
-  import { Meteor } from 'meteor/meteor';
-  
-  export default {
-    props: ['initialContact'],
-    data() {
-      return {
-        contact: {
-          name: '',
-          email: '',
-          phone: '',
-          tag: '',
-        },
+<script>
+import { Meteor } from 'meteor/meteor';
+
+export default {
+  props: ['initialContact', 'organizationId'],
+  data() {
+    return {
+      contact: {
+        name: '',
+        email: '',
+        phone: '',
+        tag: '',
+        orgId: this.organizationId,
+      },
+    };
+  },
+  mounted() {
+    // If initialContact is provided, set the initial values
+    if (this.initialContact) {
+      this.contact = { ...this.initialContact };
+    }
+  },
+  watch: {
+    organizationId(newValue, oldValue) {
+      console.log('organizationId changed:', newValue);
+    }
+  },
+  methods: {
+    submitContact() {
+      console.log('Before assignment, orgId:', this.orgId);
+      const newContact = {
+        name: this.contact.name.trim(),
+        email: this.contact.email.trim(),
+        phone: this.contact.phone.trim(),
+        tag: this.contact.tag.trim(),
+        orgId: this.orgId,
       };
-    },
-    mounted() {
-      // If initialContact is provided, set the initial values
+      console.log('After assignment, orgId:', newContact.orgId);
+
       if (this.initialContact) {
-        this.contact = { ...this.initialContact }
-      };
-     },
-    methods: {
-      submitContact() {
-        const newContact = {
-          name: this.contact.name.trim(),
-          email: this.contact.email.trim(),
-          phone: this.contact.phone.trim(),
-          tag: this.contact.tag.trim(),
-        };
+        // Update existing contact
+        Meteor.call('Contacts.update', this.initialContact._id, newContact, (error) => {
+          if (error) {
+            alert('Error updating contact: ' + error.message);
+          }
+        });
+      } else {
+        // Add new contact
+        Meteor.call('Contacts.insert', newContact, (error) => {
+          if (error) {
+            alert('Error adding contact: ' + error.message);
+          }
+        });
+      }
 
-        if (this.initialContact) {
-          // Update existing contact
-          Meteor.call('Contacts.update', this.initialContact._id, newContact, (error) => {
-            if (error) {
-              alert('Error updating contact: ' + error.message);
-            }
-          });
-        } else {
-          // Add new contact
-          Meteor.call('Contacts.insert', newContact, (error) => {
-            if (error) {
-              alert('Error adding contact: ' + error.message);
-            }
-          });
-        }
-  
-        this.closeForm();
-        // Clear the form fields after submission
-        this.contact = {
-          name: '',
-          email: '',
-          phone: '',
-          tag: '',
-        };
-      },
-      closeForm() {
-        // Clear the form fields and close the form
-        this.contact = {
-          name: '',
-          email: '',
-          phone: '',
-          tag: '',
-        };
-        this.$emit('closeForm');
-      },
+      this.closeForm();
     },
-  };
-  </script>  
+    closeForm() {
+      console.log('orgId when closing form:', this.orgId);
+      // Clear form fields and close the form
+      this.contact = {
+        name: '',
+        email: '',
+        phone: '',
+        tag: '',
+        orgId: this.orgId, // Ensure orgId is properly set when closing the form
+      };
+      this.$emit('closeForm');
+    },
+  },
+};
+</script>
 
 <style scoped>
 .contact-form-container {
@@ -154,7 +155,6 @@ button {
     background-color: #2980b9;
 }
 
-
 .button {
     padding: 12px;
     border: none;
@@ -166,6 +166,7 @@ button {
 .close-button {
     padding: 12px 20px;
 }
+
 .close-button {
     background-color: #e74c3c;
     color: white;

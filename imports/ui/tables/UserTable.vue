@@ -1,5 +1,5 @@
 <template>
-  <div class="organization-table-container">
+  <div class="user-table-container">
     <!-- Button to invite users -->
     <button type="button" class="invite-button" @click="toggleInviteForm">Invite Users</button>
 
@@ -11,7 +11,7 @@
       </div>
     </div>
 
-    <table class="organization-table">
+    <table class="user-table">
       <thead>
         <tr>
           <th>Full Name</th>
@@ -45,7 +45,7 @@ import InviteForm from '../../ui/forms/InviteForm.vue';
 import { Meteor } from 'meteor/meteor';
 
 export default {
-  name: "OrganizationTable",
+  name: "UserTable",
   components: {
     InviteForm,
   },
@@ -97,7 +97,7 @@ export default {
   padding: 0.25rem 0.5rem;
 }
 
-.organization-table {
+.user-table {
 
   width: 100%;
   border-collapse: collapse;
@@ -105,25 +105,25 @@ export default {
   table-layout: fixed;
 }
 
-.organization-table th,
-.organization-table td {
+.user-table th,
+.user-table td {
   border: 1px solid #ddd;
   padding: 12px 15px;
   word-wrap: break-word;
 }
 
-.organization-table th {
+.user-table th {
   background-color: #f2f2f2;
   font-weight: bold;
   border-bottom: 1px solid black;
 }
 
-.organization-table tbody tr {
+.user-table tbody tr {
   border-bottom: 1px solid #dddddd;
   text-align: left;
 }
 
-.organization-table tbody tr:nth-of-type(even) {
+.user-table tbody tr:nth-of-type(even) {
   background-color: #f3f3f3;
 }
 
@@ -140,7 +140,7 @@ export default {
   z-index: 2;
 }
 
-.organization-form-modal {
+.user-form-modal {
   background-color: white;
   border: 1px solid #ddd;
   border-radius: 5px;
