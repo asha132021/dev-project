@@ -13,7 +13,7 @@
 
       <button type="submit" class="loginbtn"><b>Log In</b></button>
       <p v-if="error" class="errormsg">{{ error }}</p>
-      <p class="linksignup">Don't have an account? <router-link to="/signup" class="signuplink">Sign Up</router-link> </p>
+      <p class="linksignup">Don't have an account? <router-link to="/" class="signuplink">Sign Up</router-link> </p>
     </div>
   </form>
 </template>
