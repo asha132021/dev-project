@@ -57,58 +57,60 @@ export default {
   },
   methods: {
     checkPasswordValidation(password, confirmPassword) {
-  if (password !== confirmPassword) {
-    this.error = 'Password should be the same';
-  } else {
-    this.error = ''; // Clear the error when passwords match
-  }
-
+      if (password !== confirmPassword) {
+        this.error = 'Password should be the same';
+      } else {
+        this.error = ''; // Clear the error when passwords match
+      }
     },
     onSignUp() {
-  const { fullName, email, password, confirmPassword } = this.user;
-  const { orgName, orgRole } = this.organization;
+      const { fullName, email, password, confirmPassword } = this.user;
+      const { orgName, orgRole } = this.organization;
 
-  // Check password validation
-  this.checkPasswordValidation(password, confirmPassword);
+      // Check password validation
+      this.checkPasswordValidation(password, confirmPassword);
 
-  if (!this.error) {
-    const newOrganization = {
-      fullName: fullName.trim(),
-      email: email.trim(),
-      orgName: orgName.trim(),
-      orgRole: orgRole.trim(),
-      password: password.trim(),
-      confirmPassword: confirmPassword.trim(),
-    };
+      if (!this.error) {
+        const newOrganization = {
+          fullName: fullName.trim(),
+          email: email.trim(),
+          orgName: orgName.trim(),
+          orgRole: orgRole.trim(),
+          password: password.trim(),
+          confirmPassword: confirmPassword.trim(),
+        };
 
-    Meteor.call('organizations.insert', newOrganization, (error) => {
-      console.log('Method called!');
-      if (error) {
-        console.error('Error adding organization:', error);
-        this.error = 'Error adding organization: ' + error.message;
-      } else {
-        this.clearForm();
-        alert('Organization created successfully!');
+        Meteor.call('organizations.insert', newOrganization, (error, orgId) => {
+          if (error) {
+            console.error('Error adding organization:', error);
+            this.error = 'Error adding organization: ' + error.message;
+          } else {
+            this.clearOrganizationData(orgId);
+
+            if (orgId) {
+              this.$router.push({ name: 'homepage', params: { orgId } });
+              alert('Organization created successfully!');
+            } else {
+              console.error('Organization ID not available.');
+            }
+          }
+        });
       }
-    });
-  }
-},
-    clearForm() {
-      // Clear the form fields
-      this.user = {
-        fullName: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-      };
-      this.organization = {
-        orgName: '',
-        orgRole: 'Keela Admin',
-      };
+    },
+    clearOrganizationData(orgId) {
+      Meteor.call('clearOrganizationData', orgId, (error) => {
+        if (error) {
+          console.error('Error clearing organization data:', error);
+          // Handle the error as needed
+        } else {
+          console.log('Organization data cleared successfully!');
+        }
+      });
     },
   },
 };
 </script>
+
 
   
 <style scoped>
