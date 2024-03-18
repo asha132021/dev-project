@@ -1,4 +1,6 @@
 import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { Roles } from 'meteor/alanning:roles';
 import { ContactsCollection } from '../imports/db/ContactsCollection';
 import '../imports/api/methods/contactsmethod';
 import {TagsCollection} from '../imports/db/TagsCollection';

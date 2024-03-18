@@ -1,39 +1,35 @@
 <template>
-  <div class="home-page">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <router-link :to="{ name: 'contacttable', params: { orgId: $route.params.orgId }}">Contacts</router-link>
-      <router-link :to="{ name: 'tagtable', params: { orgId: $route.params.orgId }}">Tags</router-link>
-      <router-link :to="{ name: 'usertable', params: { orgId: $route.params.orgId }}">Users</router-link>
-    </aside>
-
-    <main class="main-content">
-      <router-view></router-view>
-    </main>
-
-    <!-- Logout Button -->
-    <button class="logout-button" @click="logout">Logout</button>
-  </div>
-</template>
-
-<script>
-import { ref } from 'vue';
-
-export default {
-  methods: {
-    logout() {
-      this.$router.push('/login');
-    },
-  },
-  meteor: {
-    $subscribe: {
-      'organizations': [],
-    },
-  },
-};
-</script>
-
-
+    <div class="home-page">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-item" @click="navigateTo('/contacttable')">Contacts</div>
+        <div class="sidebar-item" @click="navigateTo('/tagtable')">Tags</div>
+       <div class="sidebar-item" @click="navigateTo('/organizationtable')">Users</div>
+      </aside>
+  
+      <!-- Main Content -->
+      <main class="main-content">
+        <router-view></router-view>
+      </main>
+  
+      <!-- Logout Button -->
+      <button class="logout-button" @click="logout">Logout</button>
+    </div>
+  </template>
+  
+  <script>
+  export default {
+    methods: {
+      navigateTo(route) {
+        this.$router.push(route);
+      },
+      logout() {
+        // Implement your logout logic here
+        this.$router.push('/login');
+      }
+    }
+  };
+  </script>
   
   <style scoped>
   .home-page {
@@ -74,5 +70,6 @@ export default {
     cursor: pointer;
   }
   </style>
+  
   
   

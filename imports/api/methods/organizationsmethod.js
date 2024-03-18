@@ -4,12 +4,10 @@ import { OrganizationsCollection } from '../../db/OrganizationsCollection';
 Meteor.methods({
   'organizations.insert'(newOrganization) {
     console.log('Inserting organization:', newOrganization);
-    const orgId = OrganizationsCollection.insert({
+    OrganizationsCollection.insert({
       ...newOrganization,
       createdAt: new Date(),
     });
-  
-    return orgId;
   },
   'organizations.update'(organizationId, updatedOrganization) {
     OrganizationsCollection.update({ _id: organizationId }, { $set: updatedOrganization });
@@ -26,8 +24,6 @@ Meteor.methods({
       return { success: false, message: 'Incorrect email or password. Please try again.' };
     }
   },
- /* 'clearOrganizationData'(orgId) {
-    OrganizationsCollection.remove({ _id: orgId });
-  }, */
 });
+
 
