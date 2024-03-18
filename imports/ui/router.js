@@ -4,7 +4,7 @@ import LogIn from './loginpage/LogIn.vue';
 import HomePage from './loginpage/HomePage.vue';
 import ContactTable from './tables/ContactTable.vue';
 import TagTable from './tables/TagTable.vue';
-import OrganizationTable from './tables/OrganizationTable.vue';
+import UserTable from './tables/UserTable.vue';
 
 
 export const router = createRouter({
@@ -27,9 +27,9 @@ export const router = createRouter({
           component: TagTable,
         },
         {
-          path: '/organizationtable',
-          name: 'organization',
-          component: OrganizationTable,
+          path: '/usertable',
+          name: 'user',
+          component: UserTable,
         },
       ]},
       {

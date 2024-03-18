@@ -4,7 +4,7 @@
       <aside class="sidebar">
         <div class="sidebar-item" @click="navigateTo('/contacttable')">Contacts</div>
         <div class="sidebar-item" @click="navigateTo('/tagtable')">Tags</div>
-       <div class="sidebar-item" @click="navigateTo('/organizationtable')">Users</div>
+       <div class="sidebar-item" @click="navigateTo('/usertable')">Users</div>
       </aside>
   
       <!-- Main Content -->
