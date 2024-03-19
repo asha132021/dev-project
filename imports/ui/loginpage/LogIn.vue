@@ -29,22 +29,23 @@ export default {
     };
   },
   methods: {
-  logIn() {
-    Meteor.call('organizations.logIn', { email: this.email, password: this.password }, (error, result) => {
-      if (error) {
-        this.error = "An unexpected error occurred.";
-      } else {
-        if (result.success) {
-          // Fetch organization data based on user login and navigate to organization homepage
-          const orgId = result.organizationId; // Adjust this based on your actual data structure
-          this.$router.push({ name: 'homepage', params: { orgId } });
+    logIn() {
+      Meteor.call('organizations.logIn', { email: this.email, password: this.password }, (error, result) => {
+        if (error) {
+
+          this.error = "An unexpected error occurred.";
         } else {
-          this.error = result.message;
+          if (result.success) {
+            // If login is successful, you can redirect to the contacttable page
+            this.$router.push('/contacttable');
+          } else {
+            // If login fails, display the error message in red color
+            this.error = result.message;
+          }
         }
-      }
-    });
+      });
+    }
   }
-}
 };
 </script> 
         
@@ -128,4 +129,3 @@ export default {
         padding-top: 10px;
     }
     </style>
-    

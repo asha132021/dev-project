@@ -1,3 +1,4 @@
+HomePage.vue:
 <template>
     <div class="home-page">
       <!-- Sidebar -->
@@ -71,6 +72,7 @@
     cursor: pointer;
   }
   </style>
+
   
   
   
