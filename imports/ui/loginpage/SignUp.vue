@@ -15,7 +15,7 @@
         <label for="orgName"><b>Organization Name</b></label>
         <input type="text" v-model="organization.orgName" name="orgName" required>
 
-        <label for="orgRole"><b>Organization Role</b></label>
+        <label for="orgRole"><b>User Role</b></label>
         <input type="text" v-model="organization.orgRole" name="orgRole" required readonly>
 
         <label for="password"><b>Password</b></label>
