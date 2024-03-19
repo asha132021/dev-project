@@ -20,4 +20,3 @@ Meteor.publish('tags', function () {
 Meteor.publish('organizations', function () {
    return OrganizationsCollection.find({}); 
 });
-

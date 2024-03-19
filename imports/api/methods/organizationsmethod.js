@@ -24,6 +24,6 @@ Meteor.methods({
       return { success: false, message: 'Incorrect email or password. Please try again.' };
     }
   },
-}); 
+});
 
 
