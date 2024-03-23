@@ -2,7 +2,7 @@
   <form @submit.prevent="onSignUp">
     <div class="signupContainer">
       <img class="logo" src="logo.jpeg">
-      <h1> Sign Up</h1>
+      <h1>Sign Up</h1>
       <div class="register">
         <p>Please fill in this form to create an account.</p>
         <hr>
@@ -56,45 +56,55 @@ export default {
     };
   },
   methods: {
-    checkPasswordValidation(password, confirmPassword) {
-  if (password !== confirmPassword) {
-    this.error = 'Password should be the same';
-  } else {
-    this.error = ''; // Clear the error when passwords match
-  }
-
+    checkPasswordValidation() {
+      const { password, confirmPassword } = this.user;
+      if (password !== confirmPassword) {
+        this.error = 'Passwords do not match';
+      } else {
+        this.error = '';
+      }
     },
     onSignUp() {
-  const { fullName, email, password, confirmPassword } = this.user;
-  const { orgName, orgRole } = this.organization;
-
-  // Check password validation
-  this.checkPasswordValidation(password, confirmPassword);
-
-  if (!this.error) {
-    const newOrganization = {
-      fullName: fullName.trim(),
-      email: email.trim(),
-      orgName: orgName.trim(),
-      orgRole: orgRole.trim(),
-      password: password.trim(),
-      confirmPassword: confirmPassword.trim(),
-    };
-
-    Meteor.call('organizations.insert', newOrganization, (error) => {
-      console.log('Method called!');
-      if (error) {
-        console.error('Error adding organization:', error);
-        this.error = 'Error adding organization: ' + error.message;
-      } else {
-        this.clearForm();
-        alert('Organization created successfully!');
+      this.checkPasswordValidation();
+      if (!this.error) {
+        const newUser = {
+          email: this.user.email,
+          password: this.user.password,
+          profile: {
+            fullName: this.user.fullName,
+            orgId: '',
+            orgName: this.organization.orgName,
+            orgRole: this.organization.orgRole,
+          },
+        };
+        const newOrganization = {
+          organizationName: this.organization.orgName,
+          organizationEmail: this.user.email,
+        };
+        Accounts.createUser(newUser, (error) => {
+          if (error) {
+            alert(error.reason);
+          } else {
+            Meteor.call('organizations.insert', newOrganization, (error, orgId) => {
+              if (error) {
+                console.error('Error adding organization:', error);
+                this.error = 'Error adding organization: ' + error.message;
+              } else {
+                Meteor.call('users.insertOrgId', Meteor.userId(), orgId, (error) => {
+                  if (error) {
+                    alert(error.reason);
+                  } else {
+                    this.clearForm(); // Clear the form fields
+                    alert('Organization created successfully!');
+                  }
+                });
+              }
+            });
+          }
+        });
       }
-    });
-  }
-},
+    },
     clearForm() {
-      // Clear the form fields
       this.user = {
         fullName: '',
         email: '',
@@ -105,10 +115,13 @@ export default {
         orgName: '',
         orgRole: 'Keela Admin',
       };
+      this.error = ''; // Clear any error messages
     },
   },
 };
 </script>
+
+
 
   
 <style scoped>

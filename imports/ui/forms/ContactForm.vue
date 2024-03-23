@@ -73,39 +73,47 @@ export default {
         }
     },
     methods: {
-        submitContact() {
-            const newContact = {
-                name: this.contact.name.trim(),
-                email: this.contact.email.trim(),
-                phone: this.contact.phone.trim(),
-                tags: this.contact.tags,
-            };
+      submitContact() {
+    const currentUser = Meteor.user();
+    if (!currentUser) {
+        alert('User not logged in');
+        return;
+    }
+    
+    const newContact = {
+        name: this.contact.name.trim(),
+        email: this.contact.email.trim(),
+        phone: this.contact.phone.trim(),
+        tags: this.contact.tags,
+        orgId: currentUser.profile.orgId, // Include the organization ID
+    };
 
-            if (this.initialContact) {
-                // Update existing contact
-                Meteor.call('Contacts.update', this.initialContact._id, newContact, (error) => {
-                    if (error) {
-                        alert('Error updating contact: ' + error.message);
-                    }
-                });
-            } else {
-                // Add new contact
-                Meteor.call('Contacts.insert', newContact, (error) => {
-                    if (error) {
-                        alert('Error adding contact: ' + error.message);
-                    }
-                });
+    if (this.initialContact) {
+        // Update existing contact
+        Meteor.call('Contacts.update', this.initialContact._id, newContact, (error) => {
+            if (error) {
+                alert('Error updating contact: ' + error.message);
             }
+        });
+    } else {
+        // Add new contact
+        Meteor.call('Contacts.insert', newContact, (error) => {
+            if (error) {
+                alert('Error adding contact: ' + error.message);
+            }
+        });
+    }
 
-            this.closeForm();
-            // Clear the form fields after submission
-            this.contact = {
-                name: '',
-                email: '',
-                phone: '',
-                tags: [],
-            };
-        },
+    this.closeForm();
+    // Clear the form fields after submission
+    this.contact = {
+        name: '',
+        email: '',
+        phone: '',
+        tags: [],
+    };
+},
+
         closeForm() {
             // Clear the form fields and close the form
             this.contact = {

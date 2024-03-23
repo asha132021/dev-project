@@ -2,6 +2,7 @@
 <div class="tag-table-container">
     <!-- Button to toggle TagForm visibility -->
     <button type="button" class="add-button" @click="addTag">Add Tag</button>
+    <p class="counter">{{ tags.length }} Tags</p> <!-- Display total tags count -->
 
     <!-- TagForm Modal Overlay -->
     <div v-if="showTagForm" class="modal-overlay">
@@ -102,6 +103,7 @@ export default {
     line-height: 1.5;
     padding: 0.25rem 0.5rem;
     margin-left: 1290px;
+    margin-top: 20px;
 }
 
 .tag-table {
@@ -121,7 +123,7 @@ export default {
 .tag-table th {
     background-color: #f2f2f2;
     font-weight: bold;
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid #ddd;
 }
 
 .tag-table tbody tr {
@@ -130,7 +132,7 @@ export default {
 }
 
 .tag-table tbody tr:nth-of-type(even) {
-    background-color: #f3f3f3;
+    background-color: #ffffff;
 }
 
 /* Modal Overlay Styles */
@@ -166,5 +168,9 @@ export default {
 .action-icon {
     width: 25px;
     height: 25px;
+}
+.counter{
+    margin-right: 1270px;
+    font-weight: bold;
 }
 </style>

@@ -33,6 +33,7 @@ export default {
         addTag() {
             const newTag = {
                 tagName: this.tagName.trim(),
+                orgId: Meteor.user().profile.orgId, //include the organization Id
             };
 
             if (this.initialtags) {
