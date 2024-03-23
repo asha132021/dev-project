@@ -1,7 +1,6 @@
 <template>
   <form @submit.prevent="logIn">
     <img class="logo" src="logo.jpeg">
-
     <div class="login">
       <h1>Log In</h1>
       <hr>
@@ -13,7 +12,7 @@
 
       <button type="submit" class="loginbtn"><b>Log In</b></button>
       <p v-if="error" class="errormsg">{{ error }}</p>
-      <p class="linksignup">Don't have an account? <router-link to="/" class="signuplink">Sign Up</router-link> </p>
+      <p class="linksignup">Don't have an account? <router-link to="/" class="signuplink">Sign Up</router-link></p>
     </div>
   </form>
 </template>
@@ -30,24 +29,19 @@ export default {
   },
   methods: {
     logIn() {
-      Meteor.call('organizations.logIn', { email: this.email, password: this.password }, (error, result) => {
+      Meteor.loginWithPassword(this.email, this.password, (error) => {
         if (error) {
-
-          this.error = "An unexpected error occurred.";
+          this.error = error.reason;
         } else {
-          if (result.success) {
-            // If login is successful, you can redirect to the contacttable page
-            this.$router.push('/contacttable');
-          } else {
-            // If login fails, display the error message in red color
-            this.error = result.message;
-          }
+          // Redirect to homepage
+          this.$router.push('/homepage');
         }
       });
     }
   }
 };
-</script> 
+</script>
+
         
         
     <style scoped>
