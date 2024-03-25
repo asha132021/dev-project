@@ -1,95 +1,122 @@
 <template>
-<div class="user-table-container">
-    <button type="button" class="invite-button" @click="inviteUser">Invite Users</button>
-
-    <div v-if="showInviteForm" class="modal-overlay">
+    <div class="user-table-container">
+      <button type="button" class="invite-button" @click="toggleInviteForm">Invite Users</button>
+  
+      <div v-if="showInviteForm" class="modal-overlay">
         <div class="user-form-modal">
-            <InviteForm :initialData="organizationData" @cancelInvite="cancelInvite" @inviteUser="inviteUser"/>
+          <!-- InviteForm component -->
+          <inviteForm 
+            :show-form="showInviteForm" 
+            :initialData="userData" 
+            @cancelInvite="cancelInvite" 
+            @invite-user="inviteUser" 
+          />
         </div>
-    </div>
-
-    <table class="user-table">
+      </div>
+  
+      <!-- User Table -->
+      <table class="user-table">
         <thead>
-            <tr>
-                <th>Full Name</th>
-                <th>Email Address</th>
-                <th>Role</th>
-                <th>Actions</th>
-            </tr>
+          <tr>
+            <th>Full Name</th>
+            <th>Email Address</th>
+            <th>Role</th>
+            <th>Actions</th>
+          </tr>
         </thead>
         <tbody>
-            <tr v-for="organization in organizations" :key="organization._id">
-                <td>{{ organization.fullName }}</td>
-                <td>{{ organization.email }}</td>
-                <td>{{ organization.orgRole }}</td>
-                <td>
-                    <button class="actionbutton" @click="deleteOrganization(organization)">
-                        <img class="action-icon" src="/delete.png" alt="Delete" />
-                    </button>
-                    <button class="actionbutton" @click="editOrganization(organization)">
-                        <img class="action-icon" src="/edit.png" alt="Edit" />
-                    </button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-</template>
-
-<script>
-import {
-    OrganizationsCollection
-} from '../../db/OrganizationsCollection';
+  <!-- Loop through users and display their information -->
+  <tr v-for="user in specificOrganizations" :key="user._id">
+    <td>{{ user.profile && user.profile.fullName }}</td>
+    <td>{{ user.emails[0].address }}</td>
+    <td>{{ user.profile && user.profile.orgRole }}</td>
+    <td>
+      <!-- Action buttons for editing and deleting users -->
+      <button class="actionbutton" @click="deleteUser(user)">
+        <img class="action-icon" src="/delete.png" alt="Delete" />
+      </button>
+      <button class="actionbutton" @click="editUser(user)">
+        <img class="action-icon" src="/edit.png" alt="Edit" />
+      </button>
+    </td>
+  </tr>
+</tbody>
+      </table>
+    </div>
+  </template>
+  
+  <script>
+import { Meteor } from 'meteor/meteor';
 import InviteForm from '../../ui/forms/InviteForm.vue';
-import {
-    Meteor
-} from 'meteor/meteor';
 
 export default {
-    name: "UserTable",
-    components: {
-        InviteForm,
+  name: "UserTable",
+  components: {
+    InviteForm,
+  },
+  data() {
+    return {
+      showInviteForm: false,
+      userData: null,
+    };
+  },
+  methods: {
+   
+    toggleInviteForm() {
+      this.showInviteForm = !this.showInviteForm;
+      this.userData = null; // Reset user data when toggling form
     },
-    data() {
-        return {
-            showInviteForm: false,
-            organizationData: null,
-        };
-    },
-    methods: {
-        toggleInviteForm(organization = null) {
 
-            this.showInviteForm = !this.showInviteForm;
-            this.organizationData = organization;
-        },
-        cancelInvite() {
-            this.showInviteForm = !this.showInviteForm;
-            this.showInviteForm = null;
-        },
-        deleteOrganization(organization) {
-            const confirmDelete = confirm('Are you sure you want to delete this user?');
-            if (confirmDelete) {
-                Meteor.call('organizations.delete', organization._id);
+    cancelInvite() {
+      this.showInviteForm = false; // Hide the invite form
+      this.userData = null; // Reset user data
+    },
+    // Method to handle inviting a new user
+    inviteUser(newUser) {
+    Meteor.call('users.add', newUser, (error, userId) => {
+        if (error) {
+            if (error.error === '') {
+                alert('Email already exists.');
+            } else {
+                alert(error.message);
             }
-        },
-        editOrganization(organization) {
-            this.toggleInviteForm(organization);
-        },
-        inviteUser() {
-            this.showInviteForm = !this.showInviteForm;
-            this.organizationData = null;
-        },
+        } else {
+            console.log('User added with ID:', userId);
+            this.showInviteForm = false; // Close the invite form after inviting the user
+        }
+    });
+},
+    // Method to delete a user
+    deleteUser(user) {
+      const confirmDelete = confirm('Are you sure you want to delete this user?');
+      if (confirmDelete) {
+        Meteor.call('users.delete', user._id);
+      }
     },
-    meteor: {
-        $subscribe: {
-            'organizations': [],
-        },
-        organizations() {
-            return OrganizationsCollection.find().fetch();
-        },
+    // Method to edit a user
+    editUser(user) {
+      this.showInviteForm = true; // Show the invite form
+      this.userData = user; // Set user data for editing
     },
+    // Method to handle closing the form when editing is canceled
+    cancelEdit() {
+      this.showInviteForm = false; // Hide the invite form
+      this.userData = null; // Reset user data
+    },
+  },
+  meteor: {
+  // Subscribe to the 'users' publication
+  $subscribe: {
+    'users': [],
+  },
+  // Fetch specific user data from the Meteor.users collection
+  specificOrganizations() {
+    return Meteor.users.find().fetch();
+  },
+},
 };
 </script>
+
 
 <style scoped>
 .invite-button {
@@ -101,6 +128,7 @@ export default {
     line-height: 1.5;
     padding: 0.25rem 0.5rem;
     margin-left: 1270px;
+    margin-top: 20px;
 }
 
 .edit-button {
@@ -131,7 +159,7 @@ export default {
 .user-table th {
     background-color: #f2f2f2;
     font-weight: bold;
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid #ddd;
 }
 
 .user-table tbody tr {
@@ -140,7 +168,7 @@ export default {
 }
 
 .user-table tbody tr:nth-of-type(even) {
-    background-color: #f3f3f3;
+    background-color: #ffffff;
 }
 
 .modal-overlay {

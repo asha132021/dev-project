@@ -24,10 +24,10 @@
       <p v-if="passwordMismatch" class="error-message">Passwords do not match</p>
   
       <div class="button-container">
-    <button type="submit" class="add-user-button">
-      <b>{{ initialData ? 'Save Data' : 'Add User' }}</b>
-    </button>
-    <button type="button" @click="cancelInvite" class="cancel-button">Cancel</button>
+        <button type="submit" class="add-user-button">
+          <b>{{ initialData ? 'Save Data' : 'Add User' }}</b>
+        </button>
+        <button type="button" @click="cancelInvite" class="cancel-button">Cancel</button>
       </div>
     </div>
   </form>
@@ -38,56 +38,51 @@ export default {
   props: ['initialData'],
   data() {
     return {
-      fullName: this.initialData ? this.initialData.fullName : "",
-      email: this.initialData ? this.initialData.email : "",
+      fullName: this.initialData ? this.initialData.profile.fullName : "",
+      email: this.initialData ? this.initialData.emails[0].address : "",
       password: "",
       confirmPassword: "",
-      selectedRole: "",
-      passwordMismatch: false, // Flag to track password mismatch
+      selectedRole: this.initialData ? this.initialData.profile.orgRole : "",
+      passwordMismatch: false,
     };
   },
   methods: {
     onInviteUser() {
-  if (this.password !== this.confirmPassword) {
-    this.passwordMismatch = true;
-    return; 
-  }
-  const userData = {
-    fullName: this.fullName,
-    email: this.email,
-    password: this.password,
-    confirmPassword: this.confirmPassword,
-    orgRole: this.selectedRole,
-  };
-
-  if (this.initialData) {
-    // Update existing user
-    Meteor.call('organizations.update', this.initialData._id, userData, (error) => {
-      if (error) {
-        alert('Error updating Userdata: ' + error.message);
+      // Check if passwords match
+      if (this.password !== this.confirmPassword) {
+        this.passwordMismatch = true;
+        return;
       }
-    });
-  } else {
-    // Add new user
-    userData.password = this.password; // Include password only for new user
-    Meteor.call('organizations.insert', userData, (error) => {
-      if (error) {
-        alert('Error adding user: ' + error.message);
+
+      const userData = {
+        profile: {
+          fullName: this.fullName,
+          orgRole: this.selectedRole,
+          orgId: Meteor.user().profile.orgId,
+        },
+        email: this.email,
+        password: this.password, // Include password for new user
+      };
+
+      if (this.initialData) {
+        // Update existing user
+        Meteor.call('users.edit', this.initialData._id, userData, (error) => {
+          if (error) {
+            alert('Error updating user data: ' + error.message);
+          }
+        });
+      } else {
+        // Add new user
+        Meteor.call('users.add', userData, (error) => {
+          if (error) {
+            alert('Error adding user: ' + error.message);
+          }
+        });
       }
-    });
-  }
 
-  // Reset password mismatch flag
-  this.passwordMismatch = false;
-
-  // Clear the form fields after submission
-  this.cancelInvite();
-  this.fullName = "";
-  this.email = "";
-  this.password = "";
-  this.confirmPassword = "";
-  this.selectedRole = "";
-},
+      // Clear the form fields after submission
+      this.cancelInvite();
+    },
     cancelInvite() {
       // Clear the form fields
       this.fullName = "";
@@ -102,6 +97,7 @@ export default {
   },
 };
 </script>
+
 
 
 <style scoped>
