@@ -6,6 +6,7 @@ import '../imports/api/methods/contactsmethod';
 import '../imports/api/methods/tagsmethod';
 import '../imports/api/methods/organizationsmethod';
 import '../imports/api/methods/usersmethod.js';
+import '../imports/api/methods/rolesmethod.js'
 
 
 Meteor.publish('contacts', function (){
@@ -33,6 +34,16 @@ Meteor.publish('organizations', function () {
     }
 });
 
+
+Meteor.publish('users', function () {
+    if (this.userId) {
+        const user = Meteor.users.findOne(this.userId);
+        const orgId = user.profile.orgId; // Assuming orgId is stored in user's profile
+        return Meteor.users.find({ 'profile.orgId': orgId });
+    } else {
+        return this.ready();
+    }
+});
 
 Meteor.publish('organizationById', function (orgId) {
     if (!this.userId) {
