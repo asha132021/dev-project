@@ -8,7 +8,6 @@
       <label for="email"><b>Email</b></label>
       <input type="email" v-model="email" name="email" required />
   
-      <!-- Dropdown for selecting role -->
       <label for="role"><b>Role</b></label>
       <select v-model="selectedRole" id="role" required>
         <option value="Keela Admin">Keela Admin</option>
@@ -54,6 +53,7 @@ export default {
         return;
       }
 
+      // Prepare user data
       const userData = {
         profile: {
           fullName: this.fullName,
@@ -61,21 +61,29 @@ export default {
           orgId: Meteor.user().profile.orgId,
         },
         email: this.email,
-        password: this.password, // Include password for new user
+        password: this.password,
       };
 
+      // Handle editing existing user data
       if (this.initialData) {
-        // Update existing user
+        // Omit password and email fields if they are not changed
+        if (!this.password) delete userData.password;
+        if (!this.email) delete userData.email;
+
         Meteor.call('users.edit', this.initialData._id, userData, (error) => {
           if (error) {
             alert('Error updating user data: ' + error.message);
+          } else {
+            console.log('User data updated successfully.');
           }
         });
       } else {
-        // Add new user
+        // Handle inviting a new user
         Meteor.call('users.add', userData, (error) => {
           if (error) {
             alert('Error adding user: ' + error.message);
+          } else {
+            console.log('User added successfully.');
           }
         });
       }
@@ -97,7 +105,6 @@ export default {
   },
 };
 </script>
-
 
 
 <style scoped>

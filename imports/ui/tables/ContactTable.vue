@@ -11,7 +11,7 @@
           <ContactForm @closeForm="closeForm" :initialContact="contactData" />
         </div>
       </div>
-  
+      <div class="table-container">
       <table class="contact-table">
         <thead>
           <tr>
@@ -41,6 +41,7 @@
           </tr>
         </tbody>
       </table>
+    </div>
     </div>
   </template>
   
@@ -102,8 +103,6 @@
       },
   };
   </script>
-  
-  
 
 <style scoped>
 .add-button {
@@ -117,35 +116,48 @@
     margin-left: 1270px;
     margin-top: 20px;
 }
+.contact-table-container {
+    position: relative;
+    overflow: auto;
+    max-height: 700px;
+  }
 
-.contact-table {
+  .table-container {
+    overflow-y: auto;
+    max-height: inherit;
+  }
+
+  .contact-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
     table-layout: fixed;
-}
+  }
 
-.contact-table th,
-.contact-table td {
+  .contact-table th,
+  .contact-table td {
     border: 1px solid #ddd;
     padding: 12px 15px;
     word-wrap: break-word;
-}
+  }
 
-.contact-table th {
+  .contact-table th {
     background-color: #f2f2f2;
     font-weight: bold;
     border-bottom: 1px solid #ddd;
-}
+    position: sticky; /* Keep the header fixed */
+    top: 0; /* Align with the top of the container */
+    z-index: 1; /* Ensure the header appears above the table body */
+  }
 
-.contact-table tbody tr {
+  .contact-table tbody tr {
     border-bottom: 1px solid #dddddd;
     text-align: left;
-}
+  }
 
-.contact-table tbody tr:nth-of-type(even) {
+  .contact-table tbody tr:nth-of-type(even) {
     background-color: #ffffff;
-}
+  }
 
 .modal-overlay {
     position: fixed;

@@ -22,10 +22,38 @@ Meteor.methods({
         }
     },
     'users.edit'(userId, updatedUser) {
-        if (this.userId) {
-            Meteor.users.update({_id: userId}, {$set: updatedUser});
-        } else {
-            throw new Meteor.Error('not-authorized', 'You are not authorized to edit this user info');
+        const existingUser = Meteor.users.findOne(userId);
+        if (!existingUser) {
+            throw new Meteor.Error('user-not-found', 'User not found.');
+        }
+
+        const existingEmail = existingUser.emails[0].address;
+        const newEmail = updatedUser.email || existingEmail; // Use existing email if not provided
+        const newPassword = updatedUser.password || ""; // Use existing password if not provided
+
+        // Ensure profile is updated
+        const updatedProfile = updatedUser.profile || {};
+        const newProfile = {
+            ...existingUser.profile,
+            ...updatedProfile
+        };
+
+        try {
+            // Update user data
+            Meteor.users.update(userId, {
+                $set: {
+                    'emails.0.address': newEmail, // Update email
+                    'profile': newProfile, // Update profile
+                }
+            });
+
+            // Update password if provided
+            if (newPassword) {
+                Accounts.setPassword(userId, newPassword);
+            }
+        } catch (error) {
+            console.error(error);
+            throw new Meteor.Error('user-update-failed', 'Failed to update user.');
         }
     },
     'users.delete'(userId) {
