@@ -27,10 +27,10 @@
                 <td>{{ user.profile && user.profile.orgRole }}</td>
                 <td>
                     <!-- Action buttons for editing and deleting users -->
-                    <button class="actionbutton" @click="deleteUser(user)">
+                    <button v-if="shouldShowDeleteButton(user)" class="actionbutton" @click="deleteUser(user)">
                         <img class="action-icon" src="/delete.png" alt="Delete" />
                     </button>
-                    <button class="actionbutton" @click="editUser(user)">
+                    <button v-if="shouldShowEditButton(user)" class="actionbutton" @click="editUser(user)">
                         <img class="action-icon" src="/edit.png" alt="Edit" />
                     </button>
                 </td>
@@ -40,8 +40,6 @@
 </div>
 </template>
 
-  
-  
 <script>
 import {
     Meteor
@@ -107,6 +105,26 @@ export default {
         cancelEdit() {
             this.showInviteForm = false; // Hide the invite form
             this.userData = null; // Reset user data
+        },
+        shouldShowDeleteButton(user) {
+            // Check if the logged-in user is an Admin
+            const loggedInUser = Meteor.user();
+            if (loggedInUser && loggedInUser.profile.orgRole === 'Admin') {
+                // If the logged-in user is an Admin, hide the delete button for Keela Admin users
+                return user.profile.orgRole !== 'Keela Admin';
+            }
+            // If the logged-in user is not an Admin, show the delete button for all users
+            return true;
+        },
+        shouldShowEditButton(user) {
+            // Check if the logged-in user is an Admin
+            const loggedInUser = Meteor.user();
+            if (loggedInUser && loggedInUser.profile.orgRole === 'Admin') {
+                // If the logged-in user is an Admin, hide the edit button for Keela Admin users
+                return user.profile.orgRole !== 'Keela Admin';
+            }
+            // If the logged-in user is not an Admin, show the edit button for all users
+            return true;
         },
     },
     meteor: {

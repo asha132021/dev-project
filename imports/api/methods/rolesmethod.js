@@ -1,8 +1,6 @@
-// Import necessary packages
 import { Roles } from 'meteor/alanning:roles';
 import { Meteor } from 'meteor/meteor';
 
-// Initialize roles at startup if they don't exist
 Meteor.startup(() => {
   if (Roles.getAllRoles().length === 0) {
     Roles.createRole('Keela Admin');
@@ -11,7 +9,6 @@ Meteor.startup(() => {
   }
 });
 
-// Define Meteor methods for role-related operations
 Meteor.methods({
   // Method to fetch all roles
   'roles.getRoles'() {

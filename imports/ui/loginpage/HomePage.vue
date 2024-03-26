@@ -4,7 +4,7 @@
     <aside class="sidebar">
       <div class="sidebar-item" :class="{ 'selected': activeItem === 'contacttable' }" @click="navigateTo('/contacttable')">Contacts</div>
       <div class="sidebar-item" :class="{ 'selected': activeItem === 'tagtable' }" @click="navigateTo('/tagtable')">Tags</div>
-      <div class="sidebar-item" :class="{ 'selected': activeItem === 'usertable' }" @click="navigateTo('/usertable')">Users</div>
+      <div v-if="showUsersSidebarItem" class="sidebar-item" :class="{ 'selected': activeItem === 'usertable' }" @click="navigateTo('/usertable')">Users</div>
       <div class="sidebar-item" :class="{ 'selected': activeItem === 'orgtable' }" @click="navigateTo('/orgtable')">Organizations</div>
     </aside>
 
@@ -35,9 +35,9 @@ import { Meteor } from 'meteor/meteor';
 export default {
   data() {
     return {
-      activeItem: '', // Track the active sidebar item
+      activeItem: '', 
       showDropdown: false,
-      orgName: 'Loading...', // Default organization name
+      orgName: 'Loading...', 
     };
   },
   methods: {
@@ -74,8 +74,21 @@ export default {
       const user = Meteor.user();
       return user ? `${user.profile.fullName}` : 'Loading...';
     },
+      showUsersSidebarItem() {
+      const user = Meteor.user();
+      if (user) {
+        return user.profile.orgRole === 'Admin' || user.profile.orgRole === 'Keela Admin';
+  }
+      return false;
+    }
   },
 };
+
+// Function to check if the user has one of the specified roles
+function userHasRole(user, roles) {
+  const userRoles = Roles.getRolesForUser(user._id);
+  return userRoles.some(role => roles.includes(role));
+}
 </script>
 
 
