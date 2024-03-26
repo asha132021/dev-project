@@ -1,122 +1,126 @@
 <template>
-    <div class="user-table-container">
-      <button type="button" class="invite-button" @click="toggleInviteForm">Invite Users</button>
-  
-      <div v-if="showInviteForm" class="modal-overlay">
+<div class="user-table-container">
+    <button type="button" class="invite-button" @click="toggleInviteForm">Invite Users</button>
+
+    <div v-if="showInviteForm" class="modal-overlay">
         <div class="user-form-modal">
-          <!-- InviteForm component -->
-          <inviteForm 
-            :show-form="showInviteForm" 
-            :initialData="userData" 
-            @cancelInvite="cancelInvite" 
-            @invite-user="inviteUser" 
-          />
+            <!-- InviteForm component -->
+            <inviteForm :show-form="showInviteForm" :initialData="userData" @cancelInvite="cancelInvite" @invite-user="inviteUser" />
         </div>
-      </div>
-  
-      <!-- User Table -->
-      <table class="user-table">
+    </div>
+
+    <!-- User Table -->
+    <table class="user-table">
         <thead>
-          <tr>
-            <th>Full Name</th>
-            <th>Email Address</th>
-            <th>Role</th>
-            <th>Actions</th>
-          </tr>
+            <tr>
+                <th>Full Name</th>
+                <th>Email Address</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
         </thead>
         <tbody>
-  <!-- Loop through users and display their information -->
-  <tr v-for="user in specificOrganizations" :key="user._id">
-    <td>{{ user.profile && user.profile.fullName }}</td>
-    <td>{{ user.emails[0].address }}</td>
-    <td>{{ user.profile && user.profile.orgRole }}</td>
-    <td>
-      <!-- Action buttons for editing and deleting users -->
-      <button class="actionbutton" @click="deleteUser(user)">
-        <img class="action-icon" src="/delete.png" alt="Delete" />
-      </button>
-      <button class="actionbutton" @click="editUser(user)">
-        <img class="action-icon" src="/edit.png" alt="Edit" />
-      </button>
-    </td>
-  </tr>
-</tbody>
-      </table>
-    </div>
-  </template>
+            <!-- Loop through users and display their information -->
+            <tr v-for="user in specificOrganizations" :key="user._id">
+                <td>{{ user.profile && user.profile.fullName }}</td>
+                <td>{{ user.emails[0].address }}</td>
+                <td>{{ user.profile && user.profile.orgRole }}</td>
+                <td>
+                    <!-- Action buttons for editing and deleting users -->
+                    <button class="actionbutton" @click="deleteUser(user)">
+                        <img class="action-icon" src="/delete.png" alt="Delete" />
+                    </button>
+                    <button class="actionbutton" @click="editUser(user)">
+                        <img class="action-icon" src="/edit.png" alt="Edit" />
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</template>
+
   
-  <script>
-import { Meteor } from 'meteor/meteor';
+  
+<script>
+import {
+    Meteor
+} from 'meteor/meteor';
 import InviteForm from '../../ui/forms/InviteForm.vue';
 
 export default {
-  name: "UserTable",
-  components: {
-    InviteForm,
-  },
-  data() {
-    return {
-      showInviteForm: false,
-      userData: null,
-    };
-  },
-  methods: {
-   
-    toggleInviteForm() {
-      this.showInviteForm = !this.showInviteForm;
-      this.userData = null; // Reset user data when toggling form
+    name: "UserTable",
+    components: {
+        InviteForm,
     },
+    data() {
+        return {
+            showInviteForm: false,
+            userData: null,
+        };
+    },
+    methods: {
 
-    cancelInvite() {
-      this.showInviteForm = false; // Hide the invite form
-      this.userData = null; // Reset user data
-    },
-    // Method to handle inviting a new user
-    inviteUser(newUser) {
-    Meteor.call('users.add', newUser, (error, userId) => {
-        if (error) {
-            if (error.error === '') {
-                alert('Email already exists.');
-            } else {
-                alert(error.message);
+        toggleInviteForm() {
+            this.showInviteForm = !this.showInviteForm;
+            this.userData = null; // Reset user data when toggling form
+        },
+
+        cancelInvite() {
+            this.showInviteForm = false; // Hide the invite form
+            this.userData = null; // Reset user data
+        },
+        // Method to handle inviting a new user
+        inviteUser(newUser) {
+            Meteor.call('users.add', newUser, (error, userId) => {
+                if (error) {
+                    if (error.error === '') {
+                        alert('Email already exists.');
+                    } else {
+                        alert(error.message);
+                    }
+                } else {
+                    console.log('User added with ID:', userId);
+                    this.showInviteForm = false; // Close the invite form after inviting the user
+                }
+            });
+        },
+        deleteUser(user) {
+            // Check if the user to be deleted is the same as the logged-in user
+            const loggedInUserId = Meteor.userId();
+            if (user._id === loggedInUserId) {
+                alert("You cannot delete your own account.");
+                return;
             }
-        } else {
-            console.log('User added with ID:', userId);
-            this.showInviteForm = false; // Close the invite form after inviting the user
-        }
-    });
-},
-    // Method to delete a user
-    deleteUser(user) {
-      const confirmDelete = confirm('Are you sure you want to delete this user?');
-      if (confirmDelete) {
-        Meteor.call('users.delete', user._id);
-      }
+
+            const confirmDelete = confirm('Are you sure you want to delete this user?');
+            if (confirmDelete) {
+                Meteor.call('users.delete', user._id);
+            }
+        },
+        // Method to edit a user
+        editUser(user) {
+            this.showInviteForm = true; // Show the invite form
+            this.userData = user; // Set user data for editing
+        },
+        // Method to handle closing the form when editing is canceled
+        cancelEdit() {
+            this.showInviteForm = false; // Hide the invite form
+            this.userData = null; // Reset user data
+        },
     },
-    // Method to edit a user
-    editUser(user) {
-      this.showInviteForm = true; // Show the invite form
-      this.userData = user; // Set user data for editing
+    meteor: {
+        // Subscribe to the 'users' publication
+        $subscribe: {
+            'users': [],
+        },
+        // Fetch specific user data from the Meteor.users collection
+        specificOrganizations() {
+            return Meteor.users.find().fetch();
+        },
     },
-    // Method to handle closing the form when editing is canceled
-    cancelEdit() {
-      this.showInviteForm = false; // Hide the invite form
-      this.userData = null; // Reset user data
-    },
-  },
-  meteor: {
-  // Subscribe to the 'users' publication
-  $subscribe: {
-    'users': [],
-  },
-  // Fetch specific user data from the Meteor.users collection
-  specificOrganizations() {
-    return Meteor.users.find().fetch();
-  },
-},
 };
 </script>
-
 
 <style scoped>
 .invite-button {
