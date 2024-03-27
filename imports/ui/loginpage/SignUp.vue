@@ -28,7 +28,10 @@
         <button type="submit" class="signupbtn"><b>Sign Up</b></button>
 
         <p class="linklogin">
-          Already have an account? <router-link to="/login" class="loginlink">Log In</router-link>
+          Already have an account? <router-link to="/login" class="loginlink">Log In</router-link> 
+          <!--and <router-link to="/adminlogin" class="loginlink">Admin Login</router-link>-->
+          
+      
         </p>
       </div>
     </div>

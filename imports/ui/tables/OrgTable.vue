@@ -1,28 +1,35 @@
 <template>
-  <div class="org-table-container">
+  <div class="org-table-container" v-if="loggedIn">
+    <!-- Add Organization Button -->
     <button type="button" class="add-org-button" @click="addOrganization">Add Organization</button>
 
+    <!-- Organization Form Modal -->
     <div v-if="showOrgForm" class="modal-overlay">
       <div class="org-form-modal">
-        <SignUp @cancel="cancelForm" @submit="submitForm" />
+        <OrganizationForm :initialOrganization="selectedOrganization" @cancel="cancelForm" @submit="submitForm" />
       </div>
     </div>
 
+    <!-- Organization Table -->
     <table class="org-table">
       <thead>
         <tr>
           <th>Organization Name</th>
+          <th>Organization Email</th>
+          <th>Number of Users</th>
           <th>Actions</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="organization in organizations" :key="organization._id">
-          <td>{{ organization.orgName }}</td>
+          <td>{{ organization.organizationName }}</td>
+          <td>{{ organization.organizationEmail }}</td>
+          <td>{{ getUsersCount(organization._id) }}</td>
           <td>
-            <button class="actionbutton edit-button" @click="editOrganization(organization)">
+            <button v-if="!isCurrentUserOrg(organization)" class="actionbutton edit-button" @click="editOrganization(organization)">
               <img class="action-icon" src="/edit.png" alt="Edit" />
             </button>
-            <button class="actionbutton" @click="deleteOrganization(organization)">
+            <button v-if="!isCurrentUserOrg(organization)" class="actionbutton" @click="deleteOrganization(organization)">
               <img class="action-icon" src="/delete.png" alt="Delete" />
             </button>
           </td>
@@ -30,53 +37,88 @@
       </tbody>
     </table>
   </div>
+  <div v-else>
+    <p>Please log in to view this content.</p>
+  </div>
 </template>
 
 <script>
 import { OrganizationsCollection } from '../../db/OrganizationsCollection';
-import SignUp from '../../ui/loginpage/SignUp.vue';
+import OrganizationForm from '../../ui/forms/OrganizationForm.vue';
 import { Meteor } from 'meteor/meteor';
 
 export default {
   name: "OrgTable",
   components: {
-    SignUp,
+    OrganizationForm,
   },
   data() {
     return {
       showOrgForm: false,
+      organizations: [],
+      selectedOrganization: null,
+      currentUserOrgName: '',
+      loggedIn: false,
     };
+  },
+  created() {
+    // Check if the user is logged in
+    this.loggedIn = !!Meteor.userId();
+    if (this.loggedIn) {
+      // Fetch organizations if the user is logged in
+      this.fetchOrganizations();
+    }
   },
   methods: {
     addOrganization() {
+      this.selectedOrganization = null;
       this.showOrgForm = true;
     },
+    
     editOrganization(organization) {
+      this.selectedOrganization = organization;
       this.showOrgForm = true;
     },
+
     deleteOrganization(organization) {
-      const confirmDelete = confirm('Are you sure you want to delete this organization?');
-      if (confirmDelete) {
-        Meteor.call('organizations.delete', organization._id);
-      }
+      Meteor.call('organizations.delete', organization._id, (error) => {
+        if (error) {
+          alert('Error deleting organization: ' + error.message);
+        } else {
+          this.fetchOrganizations(); 
+        }
+      });
     },
-    cancelForm() {
-      this.showOrgForm = false;
+    fetchOrganizations() {
+      this.organizations = OrganizationsCollection.find({}).fetch();
     },
+
+    getUsersCount(orgId) {
+      return Meteor.users.find({ 'profile.orgId': orgId }).count();
+    },
+
     submitForm() {
       this.showOrgForm = false;
+      this.selectedOrganization = null;
+    },
+
+    cancelForm() {
+      this.showOrgForm = false;
+      this.selectedOrganization = null;
+    },
+
+    isCurrentUserOrg(organization) {
+      return organization.organizationName === this.currentUserOrgName;
     },
   },
   meteor: {
     $subscribe: {
       'organizations': [],
     },
-    organizations() {
-      return OrganizationsCollection.find().fetch();
-    },
   },
 };
 </script>
+
 
 <style scoped>
 .org-table-container {
@@ -157,5 +199,126 @@ export default {
 }
 </style>
 
+<!--
+<template>
+  <div class="table-grid">
+    <button type="button" class="add-button" :disabled="isAddButtonDisabled" @click="addOrganization">Add Organization</button>
+    <organizationForm v-if="showForm" :show-Form="showForm" :editingOrganization="editingOrganization" @organization-added="handleOrganizationAdd" @organization-edit="handleOrganizationEdit" @form-closed="formClosed"/>
+  </div> 
+  <div class="table-box">
+    <table class="table">
+      <thead>
+        <tr>   
+          <th>NAME</th>
+          <th>EMAIL</th>
+          <th>USERS</th>
+          <th>ACTIONS</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="table-row" v-for="organization in filteredOrganizations" :key="organization._id">
+          <td @click="navigateToUserTable(organization._id, organization.organizationName)">{{ organization.organizationName }}</td>
+          <td @click="navigateToUserTable(organization._id, organization.organizationName)">{{ organization.organizationEmail }}</td>
+          <td @click="navigateToUserTable(organization._id, organization.organizationName)">{{ getUsersCount(organization._id) }}</td>
+          <td>
+            <button class="edit-button" @click="editOrganization(organization)">Edit</button>
+            <button class="delete-button" @click="deleteOrganization(organization)">Delete</button>
+          </td>
+        </tr>
+      </tbody>    
+    </table>
+  </div>
+</template>
 
-  
+<script>
+import organizationForm from '../forms/OrganizationForm.vue';
+import { OrganizationsCollection } from '../../db/OrganizationsCollection';
+import { Meteor } from 'meteor/meteor';
+import userTable from './UserTable.vue';
+
+export default {
+  name: 'OrgTable',
+  components: {
+    organizationForm,
+    userTable,
+  },
+  data() {    
+    return {
+      showForm: false, 
+      editingOrganization: null, 
+      isAddButtonDisabled: false,
+    };
+  },
+  meteor: {
+    $subscribe: {
+      organizations: [],
+      users: [],
+    },
+  },
+  computed: {
+    organizations() {
+      return OrganizationsCollection.find({}).fetch(); 
+    },
+    users() {
+      return Meteor.users.find({}).fetch();
+    },
+    filteredOrganizations() {
+  // Log the value of this.organizations to ensure it is populated with the expected data
+  console.log("Organizations:", this.organizations);
+
+  // Filter organizations based on logged-in user's organization
+  const loggedInUser = Meteor.user();
+  if (loggedInUser) {
+    const orgId = loggedInUser.profile.orgId;
+    console.log("Logged-in User:", loggedInUser);
+    console.log("Org ID:", orgId);
+    return this.organizations.filter(org => org.userId === loggedInUser._id || org.userId === orgId);
+  } else {
+    return [];
+  }
+},
+  },
+  methods: {
+    addOrganization() {
+      this.isAddButtonDisabled = false;
+      this.editingOrganization = null; 
+      this.showForm = true;
+    },
+    editOrganization(organization) {
+      this.editingOrganization = { ...organization };
+      this.showForm = true;  
+    },
+    handleOrganizationAdd(newOrganization) {
+      Meteor.call('organizations.insert', newOrganization);
+      this.showForm = false;
+    },
+    handleOrganizationEdit(organizationId, newOrganization) {
+      if (confirm('Are you sure you want to edit this organization?')) {
+        Meteor.call('organizations.edit', organizationId, newOrganization, (error) => {
+          if (error) {
+            alert('Error editing organization: ' + error.message);
+          }
+        });
+      }
+      this.showForm = false;
+    },
+    deleteOrganization(organization) {
+      Meteor.call('organizations.delete', organization._id, (error) => {
+        if (error) {
+          alert('Error deleting organization: ' + error.message);
+        }
+      });
+    },
+    formClosed() {
+      this.showForm = false;
+    },
+    navigateToUserTable(orgId, orgName) {
+      this.$router.push({ name: 'userTable', params: { orgId, orgName } });
+    },
+    getUsersCount(orgId) {
+      return this.users.filter(user => user.profile && user.profile.orgId === orgId).length;
+    },
+  },
+};
+</script>
+-->

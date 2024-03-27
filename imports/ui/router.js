@@ -32,9 +32,9 @@ export const router = createRouter({
           component: UserTable,
         },
         {
-        path: '/orgtable',
-        name: 'org',
-        component: OrgTable,
+          path: '/orgtable',
+          name: 'orgtable',
+          component: OrgTable,
         },
 
       ]},
@@ -48,7 +48,6 @@ export const router = createRouter({
         name: 'login',
         component: LogIn,
       },
-  
   ],
 });
 
