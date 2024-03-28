@@ -5,7 +5,7 @@
       <div class="sidebar-item" :class="{ 'selected': activeItem === 'contacttable' }" @click="navigateTo('/contacttable')">Contacts</div>
       <div class="sidebar-item" :class="{ 'selected': activeItem === 'tagtable' }" @click="navigateTo('/tagtable')">Tags</div>
       <div v-if="showUsersSidebarItem" class="sidebar-item" :class="{ 'selected': activeItem === 'usertable' }" @click="navigateTo('/usertable')">Users</div>
-      <div class="sidebar-item" :class="{ 'selected': activeItem === 'orgtable' }" @click="navigateTo('/orgtable')">Organizations</div>
+      <div v-if="showOrgSidebarItem" class="sidebar-item" :class="{ 'selected': activeItem === 'orgtable' }" @click="navigateTo('/orgtable')">Organizations</div>
     </aside>
 
     <!-- Main Content -->
@@ -80,7 +80,15 @@ export default {
         return user.profile.orgRole === 'Admin' || user.profile.orgRole === 'Keela Admin';
   }
       return false;
+    },
+    showOrgSidebarItem() {
+      const user = Meteor.user();
+      if (user) {
+        return user.profile.orgRole === 'Keela Admin';
+  }
+      return false;
     }
+
   },
 };
 

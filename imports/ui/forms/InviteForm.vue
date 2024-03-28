@@ -68,6 +68,7 @@ export default {
                     fullName: this.fullName,
                     orgRole: this.selectedRole,
                     orgId: Meteor.user().profile.orgId,
+                    orgName : Meteor.user().profile.orgName,
                 },
                 email: this.email,
                 password: this.password,

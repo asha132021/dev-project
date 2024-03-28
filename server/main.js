@@ -7,6 +7,7 @@ import '../imports/api/methods/tagsmethod';
 import '../imports/api/methods/organizationsmethod';
 import '../imports/api/methods/usersmethod.js';
 import '../imports/api/methods/rolesmethod.js'
+import { check } from 'meteor/check';
 
 
 Meteor.publish('contacts', function (){
@@ -32,7 +33,7 @@ Meteor.publish('organizations', function () {
     } else {
         return this.ready(); 
     }
-});
+}); 
 
 
 Meteor.publish('users', function () {
