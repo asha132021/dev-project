@@ -8,8 +8,8 @@
       <input type="text" v-model="organization.orgName" name="orgName" required>
 
       <!-- Org Role Field -->
-      <label v-if="!initialOrganization" for="orgRole"><b>Org Role</b></label>
-      <select v-if="!initialOrganization" v-model="user.orgRole" name="orgRole" required>
+      <label v-if="!initialOrganization" for="orgRole"><b>User Role</b></label>
+      <select v-if="!initialOrganization" v-model="user.orgRole" name="orgRole" required class="input-field">
         <option value="Keela Admin">Keela Admin</option>
       </select>
 
@@ -194,10 +194,10 @@ updateUsersOrgName(orgId, orgName) {
 }
 
 .organization-form-container h1 {
-    color: #333; /* Change color */
+    color: #333;
     font-weight: bold;
-    font-size: 20px; /* Increase font size */
-    margin-bottom: 20px; /* Add some space below the heading */
+    font-size: 20px; 
+    margin-bottom: 20px; 
 }
 
 .organization-form {
@@ -211,80 +211,7 @@ label {
 }
 
 /* Adjust input field styles */
-input {
-    padding: 10px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 100%;
-    margin-bottom: 20px;
-}
-
-.button-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-button {
-    padding: 12px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.submit-button {
-    background-color: #3498db;
-    color: white;
-    font-size: 16px;
-}
-
-.submit-button:hover {
-    background-color: #3498db;
-}
-
-.cancel-button {
-    background-color: #e74c3c;
-    color: white;
-    font-size: 16px;
-}
-
-.cancel-button:hover {
-    background-color: #c0392b;
-}
-</style>
-
-<style scoped>
-.organization-form-container {
-    width: 500px;
-    background-color: #fff;
-    max-width: 100%;
-    margin: 20px auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.organization-form-container h1 {
-    color: #333; /* Change color */
-    font-weight: bold;
-    font-size: 20px; /* Increase font size */
-    margin-bottom: 20px; /* Add some space below the heading */
-}
-
-.organization-form {
-    display: grid;
-    gap: 15px;
-}
-
-label {
-    font-weight: bold;
-    color: #686666;
-}
-
-/* Adjust input field styles */
-input {
+input,select {
     padding: 10px;
     font-size: 14px;
     border: 1px solid #ccc;
