@@ -1,4 +1,5 @@
 <template>
+  <div class="login-container">
   <form @submit.prevent="logIn">
     <img class="logo" src="logo.jpeg">
     <div class="login">
@@ -15,6 +16,7 @@
       <p class="linksignup">Don't have an account? <router-link to="/" class="signuplink">Sign Up</router-link></p>
     </div>
   </form>
+</div>
 </template>
 
 <script>
@@ -26,6 +28,9 @@ export default {
       password: "",
       error: "",
     };
+  },
+  created() {
+    this.email = this.$route.query.email || "";
   },
   methods: {
     logIn() {
@@ -122,4 +127,8 @@ export default {
     .linksignup{
         padding-top: 10px;
     }
+
+    .login-container {
+    margin-top: 50px; 
+}
     </style>

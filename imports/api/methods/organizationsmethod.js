@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { OrganizationsCollection } from '../../db/OrganizationsCollection';
+import { check } from 'meteor/check';
 
 Meteor.methods({
   'organizations.insert'(newOrganization) {
@@ -16,13 +17,12 @@ Meteor.methods({
   'organizations.delete'(organizationId) {
     OrganizationsCollection.remove({ _id: organizationId });
   },
-  'organizations.logIn'({ email, password }) {
-    const organization = OrganizationsCollection.findOne({ email });
-  
-    if (organization && organization.password === password) {
-      return { success: true, organizationId: organization._id };
-    } else {
-      return { success: false, message: 'Incorrect email or password. Please try again.' };
+  'organizations.deleteWithUsers'(organizationId) {
+    try {
+      Meteor.call('users.deleteAssociatedWithOrg', organizationId); // Delete associated users first
+      OrganizationsCollection.remove({ _id: organizationId }); // Then delete the organization
+    } catch (error) {
+      throw new Meteor.Error('delete-organization-failed', 'Failed to delete organization and associated users.');
     }
   },
   'getOrganizationNameById'(orgId) {

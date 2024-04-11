@@ -63,6 +63,14 @@ Meteor.methods({
         }
         Meteor.users.remove(userId);
     },
+    'users.deleteAssociatedWithOrg'(orgId) {
+        try {
+          Meteor.users.remove({ 'profile.orgId': orgId });
+        } catch (error) {
+          console.error('Error deleting associated users:', error);
+          throw new Meteor.Error('delete-users-failed', 'Failed to delete associated users.');
+        }
+      },
     'users.insertOrgId'(userId, orgId) {
         if (!this.userId) {
           throw new Meteor.Error('not-authorized', 'You are not authorized to add an organization ID.');
@@ -71,5 +79,26 @@ Meteor.methods({
           $set: { 'profile.orgId': orgId },
         });
     },
+        'authenticateWithBcrypt'(email, password) {
+          check(email, String);
+          check(password, String);
+      
+          // Find the user by email
+          const user = Meteor.users.findOne({ 'emails.address': email });
+      
+          if (!user) {
+            throw new Meteor.Error('user-not-found', 'User not found');
+          }
+      
+          // Check if the password matches the bcrypt hashed password
+          if (Accounts._checkPassword(user, password)) {
+            // Passwords match, return the user ID
+            return user._id;
+          } else {
+            // Passwords do not match
+            throw new Meteor.Error('incorrect-password', 'Incorrect password');
+          }
+        },
+      
 
 });

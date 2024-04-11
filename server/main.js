@@ -39,7 +39,7 @@ Meteor.publish('organizations', function () {
 Meteor.publish('users', function () {
     if (this.userId) {
         const user = Meteor.users.findOne(this.userId);
-        const orgId = user.profile.orgId; // Assuming orgId is stored in user's profile
+        const orgId = user.profile.orgId; 
         return Meteor.users.find({ 'profile.orgId': orgId });
     } else {
         return this.ready();
@@ -53,4 +53,37 @@ Meteor.publish('organizationById', function (orgId) {
 
     return OrganizationsCollection.find({ _id: orgId });
 });
+Meteor.methods({
+    'findUserWithRole'(orgId, role) {
+        // Check if the user making the request is logged in
+        if (!this.userId) {
+            throw new Meteor.Error('not-authorized', 'User is not authorized to perform this action');
+        }
+
+        // Find a user with the specified role and organization ID
+        const user = Meteor.users.findOne({
+            'profile.orgId': orgId,
+            'profile.orgRole': role
+        });
+
+        console.log("User:", user); // Log the user object
+
+        if (user) {
+            // Extract and return the email and password fields from the user object
+            const email = user.emails[0].address;
+            const password = user.services.password.bcrypt; 
+
+            console.log("Email:", email);
+            console.log("Password:", password); 
+
+            return { email, password };
+        } else {
+            console.log("No user found with role:", role, "and organization ID:", orgId); // Log if no user is found
+            return null;
+        }
+    }
+});
+
+
+
 

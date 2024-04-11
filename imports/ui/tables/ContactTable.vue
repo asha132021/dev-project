@@ -91,7 +91,7 @@ export default {
         closeForm() {
             this.showContactForm = !this.showContactForm;
             this.contactData = null;
-        }, 
+        },         
     },
     computed: {
     isCoordinator() {

@@ -8,7 +8,6 @@
       <div v-if="showOrgSidebarItem" class="sidebar-item" :class="{ 'selected': activeItem === 'orgtable' }" @click="navigateTo('/orgtable')">Organizations</div>
     </aside>
 
-    <!-- Main Content -->
     <main class="main-content">
       <!-- Display Organization Name -->
       <div class="organization-name">
@@ -33,6 +32,7 @@
 import { Meteor } from 'meteor/meteor';
 
 export default {
+  name: 'homepage',
   data() {
     return {
       activeItem: '', 
@@ -106,6 +106,7 @@ function userHasRole(user, roles) {
 display: flex;
 position: relative;
 height: 100vh;
+margin-top: 0px;
 }
 
 .sidebar {
@@ -115,6 +116,7 @@ color: black;
 padding: 20px;
 display: flex;
 flex-direction: column;
+margin-top:0px;
 }
 
 .sidebar-item {
@@ -191,4 +193,5 @@ font-weight: bold;
 .dropdown-menu button:hover {
   background-color: #f9f9f9;
 }
+
 </style>

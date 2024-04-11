@@ -29,7 +29,6 @@
 
         <p class="linklogin">
           Already have an account? <router-link to="/login" class="loginlink">Log In</router-link> 
-          <!--and <router-link to="/adminlogin" class="loginlink">Admin Login</router-link>-->
           
       
         </p>
@@ -147,6 +146,9 @@ p.errormsg {
     transition: opacity .25s ease-out;
     width: 400px;
 }
+.signupContainer {
+    margin-top: 50px; 
+}
 
 h1 {
     color: rgb(0, 0, 0);
@@ -171,7 +173,7 @@ h1 {
     height: 40px;
     padding-left: 20px;
     display: block;
-    margin-bottom: 30px;
+    margin-bottom: 15px;
     border: 1px solid rgb(0, 0, 0);
     margin-left: auto;
     margin-right: auto;

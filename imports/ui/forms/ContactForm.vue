@@ -73,46 +73,46 @@ export default {
         }
     },
     methods: {
-      submitContact() {
-    const currentUser = Meteor.user();
-    if (!currentUser) {
-        alert('User not logged in');
-        return;
-    }
-    
-    const newContact = {
-        name: this.contact.name.trim(),
-        email: this.contact.email.trim(),
-        phone: this.contact.phone.trim(),
-        tags: this.contact.tags,
-        orgId: currentUser.profile.orgId, // Include the organization ID
-    };
-
-    if (this.initialContact) {
-        // Update existing contact
-        Meteor.call('Contacts.update', this.initialContact._id, newContact, (error) => {
-            if (error) {
-                alert('Error updating contact: ' + error.message);
+        submitContact() {
+            const currentUser = Meteor.user();
+            if (!currentUser) {
+                alert('User not logged in');
+                return;
             }
-        });
-    } else {
-        // Add new contact
-        Meteor.call('Contacts.insert', newContact, (error) => {
-            if (error) {
-                alert('Error adding contact: ' + error.message);
-            }
-        });
-    }
 
-    this.closeForm();
-    // Clear the form fields after submission
-    this.contact = {
-        name: '',
-        email: '',
-        phone: '',
-        tags: [],
-    };
-},
+            const newContact = {
+                name: this.contact.name.trim(),
+                email: this.contact.email.trim(),
+                phone: this.contact.phone.trim(),
+                tags: this.contact.tags,
+                orgId: currentUser.profile.orgId, 
+            };
+
+            if (this.initialContact) {
+                // Update existing contact
+                Meteor.call('Contacts.update', this.initialContact._id, newContact, (error) => {
+                    if (error) {
+                        alert('Error updating contact: ' + error.message);
+                    }
+                });
+            } else {
+                // Add new contact
+                Meteor.call('Contacts.insert', newContact, (error) => {
+                    if (error) {
+                        alert('Error adding contact: ' + error.message);
+                    }
+                });
+            }
+
+            this.closeForm();
+            // Clear the form fields after submission
+            this.contact = {
+                name: '',
+                email: '',
+                phone: '',
+                tags: [],
+            };
+        },
 
         closeForm() {
             // Clear the form fields and close the form
@@ -122,6 +122,8 @@ export default {
                 phone: '',
                 tags: [],
             };
+            this.selectedTags = [];
+
             this.$emit('closeForm');
         },
         updateSelectedTags() {
@@ -135,112 +137,117 @@ export default {
         removeTag(index) {
             this.contact.tags.splice(index, 1);
         },
+        updateTagList(tags) {
+            // Update the tag list when tags are updated or deleted
+            this.contact.tags = tags;
+        }
+
     },
 };
 </script>
 
 <style scoped>
 .contact-form-container {
-  width: 500px;
-  max-width: 100%;
-  margin: 20px auto;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 500px;
+    max-width: 100%;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .contact-form {
-  display: grid;
-  gap: 15px;
+    display: grid;
+    gap: 15px;
 }
 
 h1 {
-  color: rgb(0, 0, 0);
-  font-weight: bold;
-  font-size: 20px;
-  margin-right: 300px;
+    color: rgb(0, 0, 0);
+    font-weight: bold;
+    font-size: 20px;
+    margin-right: 300px;
 }
 
 label {
-  font-weight: bold;
-  color: #686666;
-  margin-bottom: 5px;
+    font-weight: bold;
+    color: #686666;
+    margin-bottom: 5px;
 }
 
 input {
-  padding: 10px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
 .tag-select-container {
-  position: relative;
+    position: relative;
 }
 
 select {
-  padding: 10px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
 }
 
 .selected-tag {
-  display: inline-block;
-  background-color: #f0f0f0;
-  padding: 3px 8px;
-  border-radius: 4px;
-  margin-right: 5px;
+    display: inline-block;
+    background-color: #f0f0f0;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-right: 5px;
 }
 
 .selected-tag span {
-  margin-right: 5px;
+    margin-right: 5px;
 }
 
 .selected-tag button {
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 12px;
-  color: #777;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    color: #777;
 }
 
 .selected-tag button:hover {
-  color: #333;
+    color: #333;
 }
 
 .button-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 button {
-  padding: 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
 .add-contact-button {
-  background-color: #3498db;
-  color: white;
-  font-size: 16px;
+    background-color: #3498db;
+    color: white;
+    font-size: 16px;
 }
 
 .add-contact-button:hover {
-  background-color: #2980b9;
+    background-color: #2980b9;
 }
 
 .close-button {
-  background-color: #e74c3c;
-  color: white;
-  font-size: 16px;
+    background-color: #e74c3c;
+    color: white;
+    font-size: 16px;
 }
 
 .close-button:hover {
-  background-color: #c0392b;
+    background-color: #c0392b;
 }
 </style>

@@ -34,6 +34,7 @@ export default {
             const newTag = {
                 tagName: this.tagName.trim(),
                 orgId: Meteor.user().profile.orgId, //include the organization Id
+
             };
 
             if (this.initialtags) {
@@ -55,6 +56,12 @@ export default {
             // Clear the form field after submission
             this.closeForm();
             this.tagName = '';
+
+            // Emit an event to notify the parent component of tag changes
+            this.$emit('tagChange', {
+                action: this.initialtags ? 'edit' : 'add',
+                updatedTag: newTag, // Corrected property name
+            });
         },
 
         closeForm() {

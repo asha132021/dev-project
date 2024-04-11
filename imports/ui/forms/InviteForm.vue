@@ -16,7 +16,7 @@
             <option value="Coordinator">Coordinator</option>
 
         </select>
-
+        
         <label for="password"><b>Password</b></label>
         <input type="password" v-model="password" name="password" required />
 

@@ -36,12 +36,14 @@
 </div>
 </template>
 
-  
-  
 <script>
 import TagForm from '../../ui/forms/TagForm.vue';
-import { TagsCollection } from '../../db/TagsCollection';
-import {Meteor} from 'meteor/meteor';
+import {
+    TagsCollection
+} from '../../db/TagsCollection';
+import {
+    Meteor
+} from 'meteor/meteor';
 
 export default {
     name: "TagTable",
@@ -68,9 +70,25 @@ export default {
         deleteTag(tag) {
             const confirmDelete = confirm('Are you sure you want to delete this tag?');
             if (confirmDelete) {
-                Meteor.call('Tags.delete', tag._id);
+                Meteor.call('Tags.delete', tag._id, (error) => {
+                    if (error) {
+                        alert('Error deleting tag: ' + error.message);
+                    } else {
+                        // Emit an event to notify the parent component of tag deletion
+                        this.$emit('tagChange', {
+                            action: 'delete',
+                            tagId: tag._id
+                        });
+                    }
+                });
             }
         },
+        /*deleteTag(tag) {
+            const confirmDelete = confirm('Are you sure you want to delete this tag?');
+            if (confirmDelete) {
+                Meteor.call('Tags.delete', tag._id);
+            }
+        },*/
         editTag(tag) {
             // Open TagForm in edit mode
             this.toggleTagForm(tag);
@@ -79,20 +97,27 @@ export default {
             // Set showTagForm to false to close the form
             this.showTagForm = false;
             this.tagData = null;
-        }
-    },
-    meteor: {
-        $subscribe: {
-            'tags': [],
         },
-        tags() {
-            return TagsCollection.find().fetch();
+        handleTagChange(event) {
+            if (event.action === 'delete') {
+                // Update contacts when a tag is deleted
+                this.contacts.forEach(contact => {
+                    contact.tags = contact.tags.filter(tag => tag._id !== event.tagId);
+                });
+            }
         },
     },
-};
+        meteor: {
+            $subscribe: {
+                'tags': [],
+            },
+            tags() {
+                return TagsCollection.find().fetch();
+            },
+        },
+    };
 </script>
-  
-  
+
 <style scoped>
 .add-button {
     background-color: #7745d6;
@@ -169,7 +194,8 @@ export default {
     width: 25px;
     height: 25px;
 }
-.counter{
+
+.counter {
     margin-right: 1270px;
     font-weight: bold;
 }
